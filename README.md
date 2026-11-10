@@ -67,7 +67,8 @@ Image fields hold a file name inside `assets/img/` (or a full URL).
 
 ## Responsive behaviour
 
-- **≥ 1200 px** — the exact 1440 px design layout, scaled proportionally on smaller laptops.
+- **≥ 1200 px** — the 1440 px design layout, full width: it scales proportionally to fill
+  any screen (smaller laptops and large 1920 px / 2560 px monitors alike).
 - **768–1199 px** — tablet layout (stacked about section, 2-column dish grid).
 - **< 768 px** — mobile layout; navigation moves into the "Menu" drawer.
 
