@@ -1,0 +1,29 @@
+# Chum Chum's — site-wide Apache rules
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Always use https://www.chumchums.com.au (only applies on the live domain)
+  RewriteCond %{HTTP_HOST} ^chumchums\.com\.au$ [NC]
+  RewriteRule ^ https://www.chumchums.com.au%{REQUEST_URI} [L,R=301]
+  RewriteCond %{HTTP_HOST} ^www\.chumchums\.com\.au$ [NC]
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://www.chumchums.com.au%{REQUEST_URI} [L,R=301]
+
+  # Private folders (each also has its own .htaccess)
+  RewriteRule ^(config|database|admin/includes)(/|$) - [F,L]
+</IfModule>
+
+# Never serve source, dump or hidden files
+<FilesMatch "(^\.|\.(sql|md|log|ini|bak|sh)$)">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>

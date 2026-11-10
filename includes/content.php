@@ -57,15 +57,16 @@ function get_settings(): array
     return $settings;
 }
 
-/** Run a SELECT and return rows, or the fallback when empty / failing. */
+/**
+ * Run a SELECT and return its rows. The fallback is used only when the
+ * database is unreachable or the query fails — an empty table (e.g. every
+ * testimonial hidden in the admin) really does mean "show nothing".
+ */
 function fetch_or_default(string $sql, array $fallback): array
 {
     if ($pdo = db()) {
         try {
-            $rows = $pdo->query($sql)->fetchAll();
-            if ($rows) {
-                return $rows;
-            }
+            return $pdo->query($sql)->fetchAll();
         } catch (Throwable $ex) {
             error_log('[ChumChums] query failed: ' . $ex->getMessage());
         }

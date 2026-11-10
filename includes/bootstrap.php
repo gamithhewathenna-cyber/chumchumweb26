@@ -55,6 +55,9 @@ function base_url(string $path = ''): string
             $base = rtrim(SITE_URL, '/');
         } else {
             $dir  = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
+            if (defined('IN_ADMIN')) {
+                $dir = str_replace('\\', '/', dirname($dir)); // admin pages live one level down
+            }
             $base = rtrim($dir === '/' || $dir === '.' ? '' : $dir, '/');
         }
     }

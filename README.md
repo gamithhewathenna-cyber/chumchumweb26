@@ -21,6 +21,7 @@ No frameworks, no build step, no Composer — upload and run on any cPanel host.
 
 ```
 index.php                 Homepage
+admin/                    Admin panel (login, content editing, users)
 config/config.php         Database credentials & site options (web access blocked)
 includes/bootstrap.php    PDO connection + helpers
 includes/content.php      Queries + default content fallbacks
@@ -33,9 +34,26 @@ assets/fonts/             DM Sans (self-hosted, variable)
 assets/img/               Images
 ```
 
+## Admin panel
+
+Go to **`/admin/`** (e.g. https://www.chumchums.com.au/admin/).
+
+- **First visit:** you are sent to `admin/setup.php` to create the first admin account.
+  The *setup key* is the database password (`DB_PASS` in `config/config.php`).
+  Once an account exists, the setup page is permanently disabled.
+- **Sections:** Site Settings (text, contact details, links, main images, SEO), Menu Categories,
+  Opening Hours, Showcase Grid, Testimonials, Account & Users.
+- **Images** uploaded in the admin are saved to `assets/img/uploads/` (JPG/PNG/WebP/GIF, max 5 MB).
+  That folder must be writable by PHP (cPanel default 755 is fine).
+- **Security:** hashed passwords, CSRF-protected forms, 5 failed logins per IP → 15 min lockout,
+  auto-logout after 2 hours idle.
+- **Forgot password?** Another admin can add you a new account under *Account & Users*.
+  If there is no other admin, delete your row from the `admin_users` table in phpMyAdmin and
+  visit `/admin/` again to re-run setup.
+
 ## Editing content
 
-All homepage text is in the database, editable through phpMyAdmin:
+All homepage text is in the database, editable through the admin panel (or directly in phpMyAdmin):
 
 | Table             | Controls                                                         |
 |-------------------|------------------------------------------------------------------|

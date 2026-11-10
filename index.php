@@ -129,6 +129,7 @@ function category_pill(array $cat): string
   </section>
 
   <!-- ============ TESTIMONIALS ============ -->
+  <?php if ($testimonials): ?>
   <section class="testimonials" aria-label="What our guests say">
     <div class="testimonials__stage">
       <img class="testimonials__brush" src="<?= e(asset('img/testimonial-brush.jpg')) ?>" alt="" width="1560" height="485" loading="lazy">
@@ -147,6 +148,7 @@ function category_pill(array $cat): string
       <?php endif; ?>
     </div>
   </section>
+  <?php endif; ?>
 
 </main>
 <?php require __DIR__ . '/includes/partials/footer.php'; ?>

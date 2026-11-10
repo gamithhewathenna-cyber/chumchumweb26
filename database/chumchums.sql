@@ -125,4 +125,26 @@ INSERT INTO `testimonials` (`title`, `content`, `sort_order`) VALUES
 ('Lorem Ipsum Dolor Sit Amet', 'Lorem Ipsum Dolor Sit Amet Consectetur. Amet Dolor Quis Id Maecenas Ipsum Nullam Posuere Vitae. Volutpat Tristique Ut Hendrerit Integer Sollicitudin Nibh Pharetra Sagittis. Tellus Vestibulum Ac Nisl Quis Nec Tincidunt. Nam Ultricies Feugiat Enim Cras. Sed Odio Mattis Venenatis Luctus Cum. At Facilisi Leo Etiam Tellus. Tincidunt Id.', 2),
 ('Lorem Ipsum Dolor Sit Amet', 'Lorem Ipsum Dolor Sit Amet Consectetur. Amet Dolor Quis Id Maecenas Ipsum Nullam Posuere Vitae. Volutpat Tristique Ut Hendrerit Integer Sollicitudin Nibh Pharetra Sagittis. Tellus Vestibulum Ac Nisl Quis Nec Tincidunt. Nam Ultricies Feugiat Enim Cras. Sed Odio Mattis Venenatis Luctus Cum. At Facilisi Leo Etiam Tellus. Tincidunt Id.', 3);
 
+-- ---------- Admin panel ----------
+-- Not dropped on re-import, so admin logins survive a content reset.
+-- (The admin panel also creates these automatically on first visit.)
+-- The first admin account is created at /admin/setup.php.
+CREATE TABLE IF NOT EXISTS `admin_users` (
+  `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `username`      VARCHAR(60)  NOT NULL,
+  `password_hash` VARCHAR(255) NOT NULL,
+  `created_at`    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_login_at` TIMESTAMP    NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_username` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `admin_login_attempts` (
+  `id`           INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `ip`           VARCHAR(45)  NOT NULL,
+  `attempted_at` DATETIME     NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_ip_time` (`ip`, `attempted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
