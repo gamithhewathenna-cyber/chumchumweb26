@@ -44,7 +44,10 @@ INSERT INTO `settings` (`setting_key`, `setting_value`) VALUES
 ('reservation_image', 'reservation.jpg'),
 ('footer_text_1',     'Lorem ipsum dolor sit amet consectetur. Condimentum convallis nulla nec ultrices convallis non turpis. Euismod lacus nunc in id justo ac sed. Sit habitant donec massa semper nibh maecenas.'),
 ('footer_text_2',     'Sit senectus ullamcorper massa turpis ac orci egestas. Augue tellus sed urna vehicula semper.'),
-('copyright_name',    'Chumchums');
+('copyright_name',    'Chumchums'),
+('maintenance_mode',    '0'),
+('maintenance_title',   'We''ll Be Back Soon'),
+('maintenance_message', 'Our website is getting a fresh new look. We''re still serving delicious Sri Lankan food — give us a call or drop us an email in the meantime.');
 
 -- ---------- Hero menu categories ----------
 DROP TABLE IF EXISTS `menu_categories`;

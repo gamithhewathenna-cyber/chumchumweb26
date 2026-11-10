@@ -1,6 +1,7 @@
 <?php
 /** @var array $s  site settings */
-$pageTitle       = $pageTitle ?? $s['meta_title'];
+$maintenanceBypass = maintenance_gate($s); // visitors stop here when maintenance mode is on
+$pageTitle      = $pageTitle ?? $s['meta_title'];
 $pageDescription = $pageDescription ?? $s['meta_description'];
 $nav             = get_navigation();
 $current         = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
@@ -22,6 +23,12 @@ $current         = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
 <link rel="stylesheet" href="<?= e(asset('css/style.css')) ?>">
 </head>
 <body>
+<?php if ($maintenanceBypass): ?>
+<div class="maintenance-bar" role="status">
+  Maintenance mode is <strong>ON</strong> — visitors see the “back soon” page. You can see the site because you're logged in.
+  <a href="<?= e(base_url('admin/settings.php?tab=maintenance')) ?>">Turn off</a>
+</div>
+<?php endif; ?>
 <a class="skip-link" href="#main">Skip to content</a>
 
 <header class="site-header" id="top">

@@ -50,6 +50,11 @@ $sections = [
         'meta_title'       => ['Page title', 'text', 'Shown in the browser tab and Google results. Aim for under 65 characters.'],
         'meta_description' => ['Meta description', 'textarea', 'Shown under the title in Google results. Aim for 120–160 characters.'],
     ]],
+    'maintenance' => ['Maintenance Mode', [
+        'maintenance_mode'    => ['Turn on maintenance mode', 'checkbox', 'Visitors will see a "back soon" page instead of the website. You will still see the full site while logged in to the admin.'],
+        'maintenance_title'   => ['Heading', 'text', ''],
+        'maintenance_message' => ['Message', 'textarea', 'Your phone number and email are shown underneath automatically.'],
+    ]],
 ];
 
 $tab = (string) ($_GET['tab'] ?? '');
@@ -70,6 +75,10 @@ if (is_post()) {
                 }
                 continue;
             }
+            if ($type === 'checkbox') {
+                $save[$key] = is_array($input) && !empty($input[$key]) ? '1' : '0';
+                continue;
+            }
             $value = is_array($input) && isset($input[$key]) && is_string($input[$key]) ? trim($input[$key]) : '';
             if ($type === 'email' && $value !== '' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
                 throw new RuntimeException('Please enter a valid email address.');
@@ -84,7 +93,13 @@ if (is_post()) {
         foreach ($save as $key => $value) {
             $st->execute([$key, $value]);
         }
-        flash('success', $tabLabel . ' settings saved.');
+        if ($tab === 'maintenance') {
+            flash('success', ($save['maintenance_mode'] ?? '0') === '1'
+                ? 'Maintenance mode is ON. Visitors now see the "back soon" page.'
+                : 'Maintenance mode is OFF. The website is live for everyone.');
+        } else {
+            flash('success', $tabLabel . ' settings saved.');
+        }
         redirect('settings.php?tab=' . $tab);
     } catch (RuntimeException $ex) {
         flash('error', $ex->getMessage());
@@ -111,6 +126,8 @@ admin_page_start('Site Settings', 'settings');
     <?php foreach ($fields as $key => [$label, $type, $help]): ?>
       <?php if ($type === 'image'): ?>
         <?= field_image('img_' . $key, $label, $current[$key] ?? '', $help) ?>
+      <?php elseif ($type === 'checkbox'): ?>
+        <?= field_checkbox('s[' . $key . ']', $label, ($current[$key] ?? '0') === '1', $help) ?>
       <?php else: ?>
         <?= field_text('s[' . $key . ']', $label, $current[$key] ?? '', [
             'type' => $type, 'help' => $help, 'rows' => $key === 'about_text' ? 6 : 3,
@@ -119,6 +136,9 @@ admin_page_start('Site Settings', 'settings');
     <?php endforeach; ?>
     <div class="actions">
       <button class="btn btn--primary" type="submit">Save changes</button>
+      <?php if ($tab === 'maintenance'): ?>
+        <a class="btn btn--ghost" href="<?= e(base_url('index.php?preview_maintenance=1')) ?>" target="_blank" rel="noopener">Preview page ↗</a>
+      <?php endif; ?>
     </div>
   </form>
 <?php admin_page_end();

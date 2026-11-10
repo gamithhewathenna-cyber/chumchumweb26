@@ -101,6 +101,8 @@ h1, h2, h3 { line-height: 1.25; margin: 0 0 .5em; }
 .alert--success { background: #ecf7f1; border-color: #bfe3cf; color: #145c39; }
 .alert--error { background: #fdf0ee; border-color: #f1c4bd; color: #8e2a1f; }
 .alert--info { background: #fdf7e6; border-color: #f2dea3; color: #6d5208; }
+.alert--warning { background: var(--gold); border-color: var(--gold-dark); color: #111; }
+.alert--warning a { color: #111; font-weight: 600; margin-left: 4px; }
 
 .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
 .toolbar p { margin: 0; flex: 1 1 300px; }

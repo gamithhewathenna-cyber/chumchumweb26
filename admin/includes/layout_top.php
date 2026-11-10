@@ -46,5 +46,11 @@
 <div class="sidebar-backdrop" hidden></div>
 
 <main class="content" id="content">
+  <?php if (maintenance_enabled(get_settings())): ?>
+    <div class="alert alert--warning" role="status">
+      <strong>Maintenance mode is ON</strong> — visitors see the "back soon" page.
+      <a href="settings.php?tab=maintenance">Manage</a>
+    </div>
+  <?php endif; ?>
   <h1 class="content__title"><?= e($title) ?></h1>
   <?php render_flashes(); ?>

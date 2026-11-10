@@ -66,6 +66,13 @@ body.drawer-open { overflow: hidden; }
 }
 .skip-link:focus { top: 12px; }
 
+.maintenance-bar {
+  position: fixed; inset: auto 0 0 0; z-index: 150; padding: 8px 16px; text-align: center;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, .35);
+  background: var(--gold); color: #000; font-size: 14px; line-height: 1.4;
+}
+.maintenance-bar a { text-decoration: underline; font-weight: 600; margin-left: 6px; }
+
 /* ---------- Shared components ---------- */
 
 .tag {

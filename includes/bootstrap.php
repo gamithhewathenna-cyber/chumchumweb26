@@ -104,3 +104,4 @@ function img_url(?string $file): string
 
 require_once __DIR__ . '/icons.php';
 require_once __DIR__ . '/content.php';
+require_once __DIR__ . '/maintenance.php';
