@@ -14,6 +14,14 @@
   if (backdrop) backdrop.addEventListener('click', function () { setNav(false); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setNav(false); });
 
+  /* ---------- Keep the current tab visible in a scrolling tab bar (phones) ---------- */
+  document.querySelectorAll('.tabs').forEach(function (bar) {
+    var cur = bar.querySelector('[aria-current="page"]');
+    if (cur && bar.scrollWidth > bar.clientWidth) {
+      bar.scrollLeft = cur.offsetLeft - (bar.clientWidth - cur.offsetWidth) / 2;
+    }
+  });
+
   /* ---------- Confirm before destructive actions ---------- */
   document.addEventListener('submit', function (e) {
     var msg = e.target.getAttribute && e.target.getAttribute('data-confirm');

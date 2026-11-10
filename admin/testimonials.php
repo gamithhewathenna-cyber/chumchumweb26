@@ -75,9 +75,10 @@ if ($action === 'new' || $action === 'edit') {
             $form = ['id' => 0, 'title' => '', 'content' => '', 'sort_order' => $next, 'is_active' => 1];
         }
     }
-    admin_page_start($form['id'] ? 'Edit testimonial' : 'Add testimonial', 'testimonials');
+    admin_page_start('Home Page', 'home');
+    home_tabs('testimonials');
     ?>
-    <p><a href="testimonials.php">← All testimonials</a></p>
+    <p class="crumbs"><a href="testimonials.php">Testimonials</a> › <?= $form['id'] ? 'Edit testimonial' : 'Add testimonial' ?></p>
     <form method="post" class="panel">
       <?= csrf_field() ?>
       <input type="hidden" name="op" value="save">
@@ -100,7 +101,8 @@ if ($action === 'new' || $action === 'edit') {
 /* ---------- List ---------- */
 $rows = $pdo->query('SELECT * FROM testimonials ORDER BY sort_order, id')->fetchAll();
 
-admin_page_start('Testimonials', 'testimonials');
+admin_page_start('Home Page', 'home');
+home_tabs('testimonials');
 ?>
   <div class="toolbar">
     <p class="muted">Reviews that rotate in the yellow slider. Hide any you don't want shown — if none are shown, the section is removed from the page.</p>

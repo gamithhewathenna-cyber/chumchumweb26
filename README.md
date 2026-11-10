@@ -41,8 +41,11 @@ Go to **`/admin/`** (e.g. https://www.chumchums.com.au/admin/).
 - **First visit:** you are sent to `admin/setup.php` to create the first admin account.
   The *setup key* is the database password (`DB_PASS` in `config/config.php`).
   Once an account exists, the setup page is permanently disabled.
-- **Sections:** Site Settings (text, contact details, links, main images, SEO), Menu Categories,
-  Opening Hours, Showcase Grid, Testimonials, Account & Users.
+- **Sidebar:** Dashboard · **Home Page** · Site Settings · Account & Users.
+  - *Home Page* has a tab bar with every homepage section, in page order: Hero, Menu Categories,
+    About, Opening Hours, Showcase Grid, Reservation, Testimonials.
+  - *Site Settings* holds site-wide options: General & Contact, Links, Footer, SEO, Maintenance Mode.
+  - New pages (About Us, Gallery, Contact…) will each get their own sidebar item with the same tab bar.
 - **Images** uploaded in the admin are saved to `assets/img/uploads/` (JPG/PNG/WebP/GIF, max 5 MB).
   That folder must be writable by PHP (cPanel default 755 is fine).
 - **Security:** hashed passwords, CSRF-protected forms, 5 failed logins per IP → 15 min lockout,

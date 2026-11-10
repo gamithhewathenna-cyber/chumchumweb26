@@ -93,9 +93,10 @@ if ($action === 'new' || $action === 'edit') {
         }
         $form = $form ?: ['id' => 0, 'name' => '', 'link_url' => '#menu', 'side' => 'left', 'sort_order' => 0, 'is_active' => 1, 'thumbnail' => ''];
     }
-    admin_page_start($form['id'] ? 'Edit category' : 'Add category', 'categories');
+    admin_page_start('Home Page', 'home');
+    home_tabs('categories');
     ?>
-    <p><a href="categories.php">← All categories</a></p>
+    <p class="crumbs"><a href="categories.php">Menu Categories</a> › <?= $form['id'] ? 'Edit category' : 'Add category' ?></p>
     <form method="post" enctype="multipart/form-data" class="panel">
       <?= csrf_field() ?>
       <input type="hidden" name="op" value="save">
@@ -127,7 +128,8 @@ if ($action === 'new' || $action === 'edit') {
 /* ---------- List ---------- */
 $rows = $pdo->query('SELECT * FROM menu_categories ORDER BY side, sort_order, id')->fetchAll();
 
-admin_page_start('Menu Categories', 'categories');
+admin_page_start('Home Page', 'home');
+home_tabs('categories');
 ?>
   <div class="toolbar">
     <p class="muted">The dish pills shown to the left and right of the hero bowl. The design fits three on each side.</p>

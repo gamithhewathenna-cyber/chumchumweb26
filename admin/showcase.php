@@ -64,9 +64,10 @@ if (is_post()) {
 if ($slot >= 1 && $slot <= 7) {
     $type = slot_type($slot);
     $item = $items[$slot];
-    admin_page_start('Edit tile ' . $slot, 'showcase');
+    admin_page_start('Home Page', 'home');
+    home_tabs('showcase');
     ?>
-    <p><a href="showcase.php">← All tiles</a></p>
+    <p class="crumbs"><a href="showcase.php">Showcase Grid</a> › Edit tile <?= $slot ?></p>
     <form method="post" enctype="multipart/form-data" class="panel">
       <?= csrf_field() ?>
       <input type="hidden" name="slot" value="<?= $slot ?>">
@@ -95,7 +96,8 @@ if ($slot >= 1 && $slot <= 7) {
 }
 
 /* ---------- Overview (mirrors the website grid) ---------- */
-admin_page_start('Showcase Grid', 'showcase');
+admin_page_start('Home Page', 'home');
+home_tabs('showcase');
 ?>
   <p class="muted">The seven tiles below the About section, laid out as they appear on the website. Click a tile to edit it.</p>
   <div class="showcase-map">

@@ -39,7 +39,8 @@ if (is_post()) {
 
 $rows = $pdo->query('SELECT * FROM opening_hours ORDER BY sort_order, id')->fetchAll();
 
-admin_page_start('Opening Hours', 'hours');
+admin_page_start('Home Page', 'home');
+home_tabs('hours');
 ?>
   <p class="muted">These rows appear in the yellow Opening Hours card. Each row shows as “Days : Hours”.</p>
 

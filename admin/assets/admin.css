@@ -108,11 +108,22 @@ h1, h2, h3 { line-height: 1.25; margin: 0 0 .5em; }
 .toolbar p { margin: 0; flex: 1 1 300px; }
 .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0 24px; }
 
-/* ---------- Tabs ---------- */
-.tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 16px; }
-.tabs a { padding: 8px 14px; border-radius: 999px; text-decoration: none; color: var(--ink); background: #ebe8e0; font-weight: 500; font-size: 14px; }
-.tabs a:hover { background: #e0dccf; }
+/* ---------- Tabs (inner page top bar) ---------- */
+.tabs {
+  display: flex; gap: 4px; margin-bottom: 20px; padding: 5px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+  overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tabs a {
+  flex: none; padding: 8px 16px; border-radius: 999px; text-decoration: none;
+  color: var(--ink); font-weight: 500; font-size: 14px; white-space: nowrap;
+}
+.tabs a:hover { background: #f1eee6; }
 .tabs a[aria-current="page"] { background: var(--black); color: #fff; }
+.crumbs { margin: 0 0 16px; color: var(--muted); }
+.crumbs a { font-weight: 600; }
+.section-title { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 8px 0 12px; }
 
 /* ---------- Forms ---------- */
 .stack > * + * { margin-top: 4px; }
@@ -146,7 +157,8 @@ input[type="file"] { font: inherit; max-width: 100%; }
 .table { width: 100%; border-collapse: collapse; background: var(--surface); }
 .table th, .table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: middle; }
 .table th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
-.table__actions { display: flex; gap: 6px; justify-content: flex-end; }
+.table__actions { text-align: right; white-space: nowrap; }
+.table__actions > a, .table__actions > form { display: inline-block; vertical-align: middle; margin-left: 6px; }
 .table--form td { padding: 6px; }
 .table__new td { background: #fbf8ef; }
 .thumb { width: 64px; height: 40px; object-fit: contain; }

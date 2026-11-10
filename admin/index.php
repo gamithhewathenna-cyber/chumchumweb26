@@ -12,19 +12,36 @@ function count_rows(PDO $pdo, string $sql): int
     }
 }
 
+$homeCards = [
+    ['home.php?section=hero',        'Hero',            'Main heading, subtitle and dish photo.', null],
+    ['categories.php',               'Menu Categories', 'The dish pills around the hero bowl.', count_rows($pdo, 'SELECT COUNT(*) FROM menu_categories WHERE is_active = 1') . ' shown'],
+    ['home.php?section=about',       'About',           'Story text, chef and interior photos.', null],
+    ['hours.php',                    'Opening Hours',   'Rows in the yellow Opening Hours card.', count_rows($pdo, 'SELECT COUNT(*) FROM opening_hours') . ' rows'],
+    ['showcase.php',                 'Showcase Grid',   'The 7 tiles under the About section.', '7 tiles'],
+    ['home.php?section=reservation', 'Reservation',     'Booking heading, text and photo.', null],
+    ['testimonials.php',             'Testimonials',    'Guest reviews in the yellow slider.', count_rows($pdo, 'SELECT COUNT(*) FROM testimonials WHERE is_active = 1') . ' shown'],
+];
 $cards = [
-    ['settings.php',     'Site Settings',   'Headings, text, phone, address, links and main images.', null],
-    ['categories.php',   'Menu Categories', 'The dish pills around the hero bowl.', count_rows($pdo, 'SELECT COUNT(*) FROM menu_categories WHERE is_active = 1') . ' shown'],
-    ['hours.php',        'Opening Hours',   'Rows in the yellow Opening Hours card.', count_rows($pdo, 'SELECT COUNT(*) FROM opening_hours') . ' rows'],
-    ['showcase.php',     'Showcase Grid',   'The 7 tiles under the About section.', '7 tiles'],
-    ['testimonials.php', 'Testimonials',    'Guest reviews in the yellow slider.', count_rows($pdo, 'SELECT COUNT(*) FROM testimonials WHERE is_active = 1') . ' shown'],
-    ['account.php',      'Account & Users', 'Change your password and manage admin users.', null],
+    ['settings.php', 'Site Settings',   'Phone, email, address, links, footer, SEO and maintenance mode.', null],
+    ['account.php',  'Account & Users', 'Change your password and manage admin users.', null],
 ];
 
 admin_page_start('Dashboard', 'index');
 ?>
   <p class="lead">Welcome back, <strong><?= e($user['username']) ?></strong>. Choose what you'd like to update — changes appear on the website immediately.</p>
 
+  <h2 class="section-title">Home Page</h2>
+  <div class="cards">
+    <?php foreach ($homeCards as [$href, $title, $text, $meta]): ?>
+      <a class="card card--link" href="<?= e($href) ?>">
+        <h2><?= e($title) ?></h2>
+        <p><?= e($text) ?></p>
+        <?php if ($meta !== null): ?><span class="badge"><?= e($meta) ?></span><?php endif; ?>
+      </a>
+    <?php endforeach; ?>
+  </div>
+
+  <h2 class="section-title">Website</h2>
   <div class="cards">
     <?php foreach ($cards as [$href, $title, $text, $meta]): ?>
       <a class="card card--link" href="<?= e($href) ?>">

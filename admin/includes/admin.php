@@ -376,20 +376,123 @@ function slugify(string $s): string
 }
 
 /* ------------------------------------------------------------------ */
+/*  Settings forms (key/value rows in the `settings` table)            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Process a POSTed settings form. Fields: key => [label, type, help] where
+ * type is text | textarea | email | link | checkbox | image.
+ * On success: saves, flashes $success (string, or callable receiving the saved
+ * values) and redirects to $redirectTo. Otherwise returns the current values
+ * (with anything typed kept when there was an error).
+ */
+function settings_form_handle(PDO $pdo, array $fields, string $redirectTo, $success): array
+{
+    $current = get_settings();
+    if (!is_post()) {
+        return $current;
+    }
+    verify_csrf();
+    $input = is_array($_POST['s'] ?? null) ? $_POST['s'] : [];
+    $save  = [];
+    try {
+        foreach ($fields as $key => [$label, $type]) {
+            if ($type === 'image') {
+                $uploaded = handle_upload('img_' . $key);
+                if ($uploaded !== null) {
+                    $save[$key] = $uploaded;
+                }
+                continue;
+            }
+            if ($type === 'checkbox') {
+                $save[$key] = !empty($input[$key]) ? '1' : '0';
+                continue;
+            }
+            $value = isset($input[$key]) && is_string($input[$key]) ? trim($input[$key]) : '';
+            if ($type === 'email' && $value !== '' && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
+                throw new RuntimeException('Please enter a valid email address.');
+            }
+            if ($type === 'link') {
+                $value = clean_link($value);
+            }
+            $save[$key] = $value;
+        }
+        $st = $pdo->prepare('INSERT INTO settings (setting_key, setting_value) VALUES (?, ?)
+                             ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)');
+        foreach ($save as $key => $value) {
+            $st->execute([$key, $value]);
+        }
+        flash('success', is_callable($success) ? $success($save) : (string) $success);
+        redirect($redirectTo);
+    } catch (RuntimeException $ex) {
+        flash('error', $ex->getMessage());
+        foreach ($fields as $key => [$label, $type]) {
+            if ($type !== 'image' && isset($input[$key]) && is_string($input[$key])) {
+                $current[$key] = $input[$key];
+            }
+        }
+    }
+    return $current;
+}
+
+/** Render a settings form panel. $extraActions is HTML placed next to the Save button. */
+function settings_form_render(array $fields, array $current, string $title, string $extraActions = ''): void
+{
+    echo '<form method="post" enctype="multipart/form-data" class="panel">', csrf_field();
+    echo '<h2 class="panel__title">', e($title), '</h2>';
+    foreach ($fields as $key => [$label, $type, $help]) {
+        if ($type === 'image') {
+            echo field_image('img_' . $key, $label, $current[$key] ?? '', $help);
+        } elseif ($type === 'checkbox') {
+            echo field_checkbox('s[' . $key . ']', $label, ($current[$key] ?? '0') === '1', $help);
+        } else {
+            echo field_text('s[' . $key . ']', $label, $current[$key] ?? '', [
+                'type' => $type === 'link' ? 'text' : $type,
+                'help' => $help,
+                'rows' => $type === 'textarea' && strlen((string) ($current[$key] ?? '')) > 200 ? 6 : 3,
+            ]);
+        }
+    }
+    echo '<div class="actions"><button class="btn btn--primary" type="submit">Save changes</button>', $extraActions, '</div>';
+    echo '</form>';
+}
+
+/* ------------------------------------------------------------------ */
 /*  Page layout                                                        */
 /* ------------------------------------------------------------------ */
 
 function admin_nav(): array
 {
     return [
-        'index'        => ['Dashboard',       'M3 12l9-8 9 8M5 10v10h5v-6h4v6h5V10'],
-        'settings'     => ['Site Settings',   'M4 6h16M4 12h16M4 18h10'],
-        'categories'   => ['Menu Categories', 'M4 5h7v6H4zM13 5h7v6h-7zM4 13h7v6H4zM13 13h7v6h-7z'],
-        'hours'        => ['Opening Hours',   'M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z'],
-        'showcase'     => ['Showcase Grid',   'M3 4h8v16H3zM13 4h8v7h-8zM13 13h8v7h-8z'],
-        'testimonials' => ['Testimonials',    'M5 5h14v10H9l-4 4z'],
-        'account'      => ['Account & Users', 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0'],
+        'index'    => ['Dashboard',       'M3 12l9-8 9 8M5 10v10h5v-6h4v6h5V10'],
+        'home'     => ['Home Page',       'M4 5h16v14H4zM4 9h16M8 13h8M8 16h5'],
+        'settings' => ['Site Settings',   'M4 6h16M4 12h16M4 18h10'],
+        'account'  => ['Account & Users', 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0'],
     ];
+}
+
+/** Home Page sections, in the order they appear on the website: key => [label, url]. */
+function home_sections(): array
+{
+    return [
+        'hero'         => ['Hero',            'home.php?section=hero'],
+        'categories'   => ['Menu Categories', 'categories.php'],
+        'about'        => ['About',           'home.php?section=about'],
+        'hours'        => ['Opening Hours',   'hours.php'],
+        'showcase'     => ['Showcase Grid',   'showcase.php'],
+        'reservation'  => ['Reservation',     'home.php?section=reservation'],
+        'testimonials' => ['Testimonials',    'testimonials.php'],
+    ];
+}
+
+/** Top bar of tabs shown on every Home Page section. */
+function home_tabs(string $active): void
+{
+    echo '<nav class="tabs" aria-label="Home page sections">';
+    foreach (home_sections() as $key => [$label, $url]) {
+        echo '<a href="', e($url), '"', $key === $active ? ' aria-current="page"' : '', '>', e($label), '</a>';
+    }
+    echo '</nav>';
 }
 
 function admin_page_start(string $title, string $active): void
