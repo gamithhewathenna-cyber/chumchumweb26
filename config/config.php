@@ -8,13 +8,13 @@
  */
 
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'cpuser_chumchums');
-define('DB_USER', 'cpuser_chumchums');
-define('DB_PASS', 'change-this-password');
+define('DB_NAME', 'tcplckfa_chumchum26');
+define('DB_USER', 'tcplckfa_chumchum26admin');
+define('DB_PASS', 'f}+WJg3Zh~8+BaBW');
 define('DB_CHARSET', 'utf8mb4');
 
 /* Leave empty to auto-detect. Set to e.g. 'https://chumchums.com.au' if needed. */
-define('SITE_URL', '');
+define('SITE_URL', 'https://www.chumchums.com.au');
 
 /* Set to true only while developing — shows PHP errors on screen. */
 define('APP_DEBUG', false);
