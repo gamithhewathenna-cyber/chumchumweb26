@@ -42,9 +42,9 @@ $current         = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
       <img src="<?= e(asset('img/logo.png')) ?>" alt="<?= e($s['site_name']) ?>" width="204" height="159">
     </a>
 
-    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-drawer">
+    <!-- Phones & tablets only: opens the navigation drawer (desktop shows the links in the header) -->
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-drawer" aria-label="Open navigation">
       <span class="menu-toggle__icon" aria-hidden="true"><i></i><i></i></span>
-      <span class="menu-toggle__label">Menu</span>
     </button>
 
     <nav class="main-nav" aria-label="Main">
@@ -67,8 +67,8 @@ $current         = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
 
 <div class="drawer" id="site-drawer" aria-hidden="true">
   <div class="drawer__backdrop" data-drawer-close></div>
-  <aside class="drawer__panel" role="dialog" aria-modal="true" aria-label="Menu">
-    <button class="drawer__close" type="button" data-drawer-close aria-label="Close menu">&times;</button>
+  <aside class="drawer__panel" role="dialog" aria-modal="true" aria-label="Navigation">
+    <button class="drawer__close" type="button" data-drawer-close aria-label="Close navigation">&times;</button>
     <img class="drawer__logo" src="<?= e(asset('img/logo.png')) ?>" alt="" width="204" height="159">
     <nav aria-label="Mobile">
       <ul class="drawer__nav">
@@ -77,14 +77,6 @@ $current         = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
         <?php endforeach; ?>
       </ul>
     </nav>
-    <p class="drawer__heading">Our Menu</p>
-    <ul class="drawer__menu">
-      <?php foreach (get_menu_categories() as $cat): ?>
-        <li><a href="<?= e(nav_url($cat['link_url'])) ?>" data-drawer-close>
-          <img src="<?= e(img_url($cat['thumbnail'])) ?>" alt="" loading="lazy"><?= e($cat['name']) ?>
-        </a></li>
-      <?php endforeach; ?>
-    </ul>
     <div class="drawer__actions">
       <a class="current-customer" href="<?= e(link_url($s['customer_url'])) ?>">Current Customer?</a>
       <a class="btn-pill btn-pill--order" href="<?= e(link_url($s['order_url'])) ?>">
