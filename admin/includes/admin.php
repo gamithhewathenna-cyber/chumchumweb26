@@ -62,6 +62,19 @@ function ensure_admin_tables(PDO $pdo): void
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 }
 
+/** Hero-slider columns on menu_categories (added Nov 2026) — created automatically if missing. */
+function ensure_category_hero_columns(PDO $pdo): void
+{
+    if ($pdo->query("SHOW COLUMNS FROM `menu_categories` LIKE 'hero_title'")->fetch()) {
+        return;
+    }
+    $pdo->exec("ALTER TABLE `menu_categories`
+        ADD COLUMN `hero_badge`    VARCHAR(100) NOT NULL DEFAULT '' AFTER `is_active`,
+        ADD COLUMN `hero_title`    VARCHAR(150) NOT NULL DEFAULT '' AFTER `hero_badge`,
+        ADD COLUMN `hero_subtitle` VARCHAR(150) NOT NULL DEFAULT '' AFTER `hero_title`,
+        ADD COLUMN `hero_image`    VARCHAR(255) NOT NULL DEFAULT '' AFTER `hero_subtitle`");
+}
+
 function admin_count(PDO $pdo): int
 {
     return (int) $pdo->query('SELECT COUNT(*) FROM admin_users')->fetchColumn();

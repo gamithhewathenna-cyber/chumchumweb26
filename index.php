@@ -10,6 +10,10 @@ $testimonials = get_testimonials();
 $leftCats  = array_values(array_filter($categories, fn($c) => $c['side'] === 'left'));
 $rightCats = array_values(array_filter($categories, fn($c) => $c['side'] !== 'left'));
 
+/* Hero slider: one slide per category, in pill order (left pills, then right pills) */
+[$heroSlides, $heroStart] = get_hero_slides($s, array_merge($leftCats, $rightCats));
+$heroPreload = $heroSlides[$heroStart]['image'];
+
 require __DIR__ . '/includes/partials/header.php';
 
 /** Discover More button */
@@ -19,16 +23,18 @@ function discover_btn(string $url, string $label = 'Discover More'): string
         . icon_arrow() . '</span><span class="btn-pill__text">' . e($label) . '</span></a>';
 }
 
-function category_pill(array $cat): string
+/** Category pill — a button that switches the hero slider to that dish. */
+function category_pill(array $cat, int $index, bool $active): string
 {
-    return '<li><a class="cat-pill" href="' . e(link_url($cat['link_url'])) . '"><img src="' . e(img_url($cat['thumbnail']))
-        . '" alt="" width="60" height="37">' . e($cat['name']) . '</a></li>';
+    return '<li><button class="cat-pill' . ($active ? ' is-active' : '') . '" type="button" data-slide="' . $index . '"'
+        . ' aria-controls="hero-slide-' . $index . '" aria-pressed="' . ($active ? 'true' : 'false') . '">'
+        . '<img src="' . e(img_url($cat['thumbnail'])) . '" alt="" width="60" height="37">' . e($cat['name']) . '</button></li>';
 }
 ?>
 <main id="main">
 
-  <!-- ============ HERO ============ -->
-  <section class="hero" id="menu" aria-labelledby="hero-title">
+  <!-- ============ HERO (dish slider) ============ -->
+  <section class="hero" id="menu" aria-roledescription="carousel" aria-label="Our dishes">
     <svg class="hero__arc" viewBox="0 0 1440 800" preserveAspectRatio="xMidYMin meet" aria-hidden="true">
       <defs>
         <linearGradient id="arcFade" x1="0" y1="0" x2="0" y2="800" gradientUnits="userSpaceOnUse">
@@ -41,24 +47,35 @@ function category_pill(array $cat): string
       <circle cx="720" cy="744" r="516" fill="none" stroke="url(#arcFade)" stroke-width="1.2"/>
     </svg>
 
-    <div class="hero__head">
-      <span class="tag"><?= e($s['hero_badge']) ?></span>
-      <h1 class="hero__title" id="hero-title"><?= e($s['hero_title']) ?></h1>
-      <p class="hero__subtitle"><?= e($s['hero_subtitle']) ?></p>
+    <h1 class="sr-only"><?= e($s['meta_title']) ?></h1>
+
+    <div class="hero__slides" aria-live="polite">
+      <?php foreach ($heroSlides as $i => $slide): $active = $i === $heroStart; ?>
+        <div class="hero__slide<?= $active ? ' is-active' : '' ?>" id="hero-slide-<?= $i ?>" role="group"
+             aria-roledescription="slide" aria-label="<?= e($slide['name'] ?: $slide['title']) ?>"<?= $active ? '' : ' aria-hidden="true"' ?>>
+          <div class="hero__head">
+            <?php if ($slide['badge'] !== ''): ?><span class="tag"><?= e($slide['badge']) ?></span><?php endif; ?>
+            <h2 class="hero__title"><?= e($slide['title']) ?></h2>
+            <?php if ($slide['subtitle'] !== ''): ?><p class="hero__subtitle"><?= e($slide['subtitle']) ?></p><?php endif; ?>
+          </div>
+          <div class="hero__dish">
+            <img src="<?= e(img_url($slide['image'])) ?>" alt="<?= e(trim($slide['title'] . ' ' . $slide['subtitle'])) ?>"
+                 width="1215" height="747"<?= $active ? ' fetchpriority="high"' : ' decoding="async"' ?>>
+          </div>
+        </div>
+      <?php endforeach; ?>
     </div>
 
-    <div class="hero__dish">
-      <img src="<?= e(img_url($s['hero_image'])) ?>" alt="<?= e($s['hero_title'] . ' ' . $s['hero_subtitle']) ?>" width="1215" height="747" fetchpriority="high">
-    </div>
-
+    <?php if (count($categories) > 0): ?>
     <div class="hero__cats-wrap">
-      <ul class="hero__cats hero__cats--left" aria-label="Menu categories">
-        <?php foreach ($leftCats as $cat) echo category_pill($cat); ?>
+      <ul class="hero__cats hero__cats--left" aria-label="Choose a dish">
+        <?php foreach ($leftCats as $n => $cat) echo category_pill($cat, $n, $n === $heroStart); ?>
       </ul>
-      <ul class="hero__cats hero__cats--right" aria-label="More menu categories">
-        <?php foreach ($rightCats as $cat) echo category_pill($cat); ?>
+      <ul class="hero__cats hero__cats--right" aria-label="Choose a dish">
+        <?php foreach ($rightCats as $n => $cat) { $idx = count($leftCats) + $n; echo category_pill($cat, $idx, $idx === $heroStart); } ?>
       </ul>
     </div>
+    <?php endif; ?>
   </section>
 
   <!-- ============ ABOUT ============ -->

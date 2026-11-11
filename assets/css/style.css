@@ -178,6 +178,20 @@ body.drawer-open { overflow: hidden; }
 .hero__subtitle { margin-top: 4px; font-size: 22px; line-height: 1.2; }
 .hero__dish { position: relative; z-index: 1; width: min(724px, 100%); margin: 28px auto 0; }
 .hero__dish img { width: 100%; height: auto; }
+
+/* Dish slider — slides share one grid cell and crossfade */
+.hero__slides { display: grid; }
+.hero__slide { grid-area: 1 / 1; min-width: 0; }
+.hero__slide .hero__head,
+.hero__slide .hero__dish {
+  transition: opacity .6s ease, visibility .6s ease, transform .6s ease;
+}
+.hero__slide .hero__dish img { transition: transform .9s cubic-bezier(.2, .7, .2, 1); }
+.hero__slide:not(.is-active) .hero__head,
+.hero__slide:not(.is-active) .hero__dish { opacity: 0; visibility: hidden; pointer-events: none; }
+.hero__slide:not(.is-active) .hero__head { transform: translateY(12px); }
+.hero__slide:not(.is-active) .hero__dish img { transform: translateY(28px) scale(.92) rotate(-6deg); }
+
 .hero__cats-wrap {
   position: relative; z-index: 3;
   display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
@@ -193,6 +207,12 @@ body.drawer-open { overflow: hidden; }
 }
 .cat-pill img { height: 32px; width: auto; }
 .cat-pill:hover { background: #5a5a5a; transform: translateY(-2px); }
+.cat-pill.is-active, .cat-pill.is-active:hover { background: var(--gold); color: #000; }
+
+.sr-only {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 
 /* ---------- About ---------- */
 
@@ -440,6 +460,7 @@ body.drawer-open { overflow: hidden; }
 
   /* Hero */
   .hero { height: calc(755 * var(--u)); padding: 0; }
+  .hero__slides, .hero__slide { display: contents; } /* children keep their absolute design positions */
   .hero__arc { width: calc(1440 * var(--u)); }
   .hero__head { position: absolute; left: 0; right: 0; top: calc(159 * var(--u)); }
   .hero__head .tag { padding: 0 calc(16 * var(--u)); }

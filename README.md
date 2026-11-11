@@ -27,7 +27,8 @@ includes/bootstrap.php    PDO connection + helpers
 includes/content.php      Queries + default content fallbacks
 includes/icons.php        Inline SVG icons
 includes/partials/        Shared header (with menu drawer) and footer
-database/chumchums.sql    Schema + seed data (web access blocked)
+database/chumchums.sql    Schema + seed data for a fresh install (web access blocked)
+database/updates/         Incremental SQL for existing databases — run each new file once in phpMyAdmin
 assets/css/style.css      All styles (mobile → tablet → desktop)
 assets/js/main.js         Menu drawer + testimonial slider
 assets/fonts/             DM Sans (self-hosted, variable)
@@ -61,7 +62,7 @@ All homepage text is in the database, editable through the admin panel (or direc
 | Table             | Controls                                                         |
 |-------------------|------------------------------------------------------------------|
 | `settings`        | Headings, paragraphs, phone, email, address, social & order links |
-| `menu_categories` | The six dish pills around the hero bowl (`side` = left / right)   |
+| `menu_categories` | The dish pills around the hero (`side` = left / right). Each one is also a **hero slide**: clicking the pill shows its `hero_title`, `hero_subtitle`, `hero_badge` and `hero_image` (empty fields fall back to the Hero defaults in `settings`). |
 | `opening_hours`   | Rows in the yellow Opening Hours card                            |
 | `showcase_items`  | The 7 grid tiles (slot 1 feature, 2/4/6 text, 3/5/7 images)      |
 | `testimonials`    | Slides in the yellow testimonial slider (`is_active` to hide)    |

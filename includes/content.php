@@ -99,17 +99,70 @@ function get_footer_links(): array
 
 function get_menu_categories(): array
 {
-    return fetch_or_default(
-        "SELECT name, thumbnail, link_url, side FROM menu_categories WHERE is_active = 1 ORDER BY side, sort_order, id",
-        [
-            ['name' => 'Submarine',   'thumbnail' => 'thumb-submarine.png',   'link_url' => '#menu', 'side' => 'left'],
-            ['name' => 'Fried Rice',  'thumbnail' => 'thumb-fried-rice.png',  'link_url' => '#menu', 'side' => 'left'],
-            ['name' => 'Kottu',       'thumbnail' => 'thumb-kottu.png',       'link_url' => '#menu', 'side' => 'left'],
-            ['name' => 'Cuttle Fish', 'thumbnail' => 'thumb-cuttle-fish.png', 'link_url' => '#menu', 'side' => 'right'],
-            ['name' => 'Rice & Curry','thumbnail' => 'thumb-rice-curry.png',  'link_url' => '#menu', 'side' => 'right'],
-            ['name' => 'Biryani',     'thumbnail' => 'thumb-biryani.png',     'link_url' => '#menu', 'side' => 'right'],
-        ]
-    );
+    static $rows = null;
+    if ($rows !== null) {
+        return $rows;
+    }
+    $c = static function (string $name, string $thumb, string $side, string $title, string $subtitle, string $image = ''): array {
+        return ['name' => $name, 'thumbnail' => $thumb, 'link_url' => '#menu', 'side' => $side,
+                'hero_badge' => '', 'hero_title' => $title, 'hero_subtitle' => $subtitle, 'hero_image' => $image];
+    };
+    $defaults = [
+        $c('Submarine',    'thumb-submarine.png',   'left',  'Chicken Submarine',            'Toasted Bread, Fresh Salad And Signature Sauce'),
+        $c('Fried Rice',   'thumb-fried-rice.png',  'left',  'Seafood & Chicken Fried Rice', 'With Fresh Vegetables And Egg', 'hero-bowl.webp'),
+        $c('Kottu',        'thumb-kottu.png',       'left',  'Chicken Kottu Roti',           'Chopped Roti, Vegetables And Spicy Curry Gravy'),
+        $c('Cuttle Fish',  'thumb-cuttle-fish.png', 'right', 'Devilled Cuttle Fish',         'Crispy, Spicy And Tossed With Peppers And Onion'),
+        $c('Rice & Curry', 'thumb-rice-curry.png',  'right', 'Sri Lankan Rice & Curry',      'Rice With Curries, Sambol And Papadam'),
+        $c('Biryani',      'thumb-biryani.png',     'right', 'Chicken Biryani',              'Fragrant Spiced Rice With Tender Chicken'),
+    ];
+    $where = 'FROM menu_categories WHERE is_active = 1 ORDER BY side, sort_order, id';
+    if ($pdo = db()) {
+        try {
+            return $rows = $pdo->query("SELECT name, thumbnail, link_url, side, hero_badge, hero_title, hero_subtitle, hero_image $where")->fetchAll();
+        } catch (Throwable $ex) {
+            // The hero-slide columns haven't been added yet — fall back to the original columns
+            try {
+                return $rows = $pdo->query("SELECT name, thumbnail, link_url, side $where")->fetchAll();
+            } catch (Throwable $ex2) {
+                error_log('[ChumChums] menu_categories: ' . $ex2->getMessage());
+            }
+        }
+    }
+    return $rows = $defaults;
+}
+
+/**
+ * Hero slides — one per active menu category, in pill order (left side, then right).
+ * Empty slide fields fall back to the Home Page → Hero defaults.
+ * Returns [slides, index of the slide to show first].
+ */
+function get_hero_slides(array $s, array $orderedCats): array
+{
+    $slides = [];
+    foreach ($orderedCats as $cat) {
+        $image    = trim((string) ($cat['hero_image'] ?? ''));
+        $slides[] = [
+            'name'      => $cat['name'],
+            'badge'     => trim((string) ($cat['hero_badge'] ?? '')) ?: $s['hero_badge'],
+            'title'     => trim((string) ($cat['hero_title'] ?? '')) ?: $cat['name'],
+            'subtitle'  => trim((string) ($cat['hero_subtitle'] ?? '')),
+            'image'     => $image !== '' ? $image : $s['hero_image'],
+            'has_image' => $image !== '',
+        ];
+    }
+    if (!$slides) {
+        $slides[] = ['name' => '', 'badge' => $s['hero_badge'], 'title' => $s['hero_title'],
+                     'subtitle' => $s['hero_subtitle'], 'image' => $s['hero_image'], 'has_image' => true];
+    }
+    // Open on the first dish that has its own photo
+    $start = 0;
+    foreach ($slides as $i => $slide) {
+        if ($slide['has_image']) {
+            $start = $i;
+            break;
+        }
+    }
+    return [$slides, $start];
 }
 
 function get_opening_hours(): array

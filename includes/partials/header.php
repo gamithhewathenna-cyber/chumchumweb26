@@ -19,7 +19,7 @@ $current         = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
 <meta property="og:image" content="<?= e(img_url($s['hero_image'])) ?>">
 <link rel="icon" type="image/png" href="<?= e(asset('img/logo.png')) ?>">
 <link rel="preload" href="<?= e(asset('fonts/dm-sans-latin-opsz-normal.woff2')) ?>" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="<?= e(img_url($s['hero_image'])) ?>" as="image">
+<link rel="preload" href="<?= e(img_url($heroPreload ?? $s['hero_image'])) ?>" as="image">
 <link rel="stylesheet" href="<?= e(asset('css/style.css')) ?>">
 </head>
 <body>

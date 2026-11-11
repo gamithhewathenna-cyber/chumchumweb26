@@ -60,17 +60,22 @@ CREATE TABLE `menu_categories` (
   `side`       ENUM('left','right') NOT NULL DEFAULT 'left',
   `sort_order` INT NOT NULL DEFAULT 0,
   `is_active`  TINYINT(1) NOT NULL DEFAULT 1,
+  -- Hero slider: each category is also a slide (empty = use the Hero defaults)
+  `hero_badge`    VARCHAR(100) NOT NULL DEFAULT '',
+  `hero_title`    VARCHAR(150) NOT NULL DEFAULT '',
+  `hero_subtitle` VARCHAR(150) NOT NULL DEFAULT '',
+  `hero_image`    VARCHAR(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_slug` (`slug`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `menu_categories` (`name`, `slug`, `thumbnail`, `link_url`, `side`, `sort_order`) VALUES
-('Submarine',    'submarine',    'thumb-submarine.png',   '#menu', 'left',  1),
-('Fried Rice',   'fried-rice',   'thumb-fried-rice.png',  '#menu', 'left',  2),
-('Kottu',        'kottu',        'thumb-kottu.png',       '#menu', 'left',  3),
-('Cuttle Fish',  'cuttle-fish',  'thumb-cuttle-fish.png', '#menu', 'right', 1),
-('Rice & Curry', 'rice-curry',   'thumb-rice-curry.png',  '#menu', 'right', 2),
-('Biryani',      'biryani',      'thumb-biryani.png',     '#menu', 'right', 3);
+INSERT INTO `menu_categories` (`name`, `slug`, `thumbnail`, `link_url`, `side`, `sort_order`, `hero_title`, `hero_subtitle`, `hero_image`) VALUES
+('Submarine',    'submarine',    'thumb-submarine.png',   '#menu', 'left',  1, 'Chicken Submarine',            'Toasted Bread, Fresh Salad And Signature Sauce',  ''),
+('Fried Rice',   'fried-rice',   'thumb-fried-rice.png',  '#menu', 'left',  2, 'Seafood & Chicken Fried Rice', 'With Fresh Vegetables And Egg',                   'hero-bowl.webp'),
+('Kottu',        'kottu',        'thumb-kottu.png',       '#menu', 'left',  3, 'Chicken Kottu Roti',           'Chopped Roti, Vegetables And Spicy Curry Gravy',  ''),
+('Cuttle Fish',  'cuttle-fish',  'thumb-cuttle-fish.png', '#menu', 'right', 1, 'Devilled Cuttle Fish',         'Crispy, Spicy And Tossed With Peppers And Onion', ''),
+('Rice & Curry', 'rice-curry',   'thumb-rice-curry.png',  '#menu', 'right', 2, 'Sri Lankan Rice & Curry',      'Rice With Curries, Sambol And Papadam',           ''),
+('Biryani',      'biryani',      'thumb-biryani.png',     '#menu', 'right', 3, 'Chicken Biryani',              'Fragrant Spiced Rice With Tender Chicken',        '');
 
 -- ---------- Opening hours ----------
 DROP TABLE IF EXISTS `opening_hours`;
