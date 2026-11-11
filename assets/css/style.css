@@ -607,6 +607,8 @@ body.drawer-open { overflow: hidden; }
 }
 .hero__steam { display: none; }
 .cat-pill:active { scale: .95; }
+.spice-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.hero__spices { display: none; } /* decorative — only shown when motion is welcome */
 
 @media (prefers-reduced-motion: no-preference) {
 
@@ -630,6 +632,37 @@ body.drawer-open { overflow: hidden; }
     60%  { opacity: .28; translate: 14% -45%;  scale: 1 1.2; }
     100% { opacity: 0;   translate: -10% -95%; scale: 1.5 1.6; }
   }
+
+  /* ---------- Falling spices: chillies, curry leaves, star anise, cinnamon, cardamom, pepper ----------
+     Dark, soft-focus pieces drift down behind the plate; a few big blurred ones pass in front
+     near the edges for depth. Each .spice is a full-height column that slides down the hero. */
+  .hero__spices {
+    display: block; position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 80%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 80%, transparent 100%);
+    transition: translate 1s var(--ease-out);
+  }
+  .hero__spices--back  { z-index: 0; translate: calc(var(--mx, 0) * 8px) calc(var(--my, 0) * 5px); }
+  .hero__spices--front { z-index: 2; translate: calc(var(--mx, 0) * 28px) calc(var(--my, 0) * 16px); }
+  .spice {
+    position: absolute; top: 0; left: var(--x); height: 100%;
+    width: calc(var(--size) * var(--u)); margin-left: calc(var(--size) * var(--u) / -2);
+    animation: spiceFall var(--dur) linear var(--delay) infinite;
+    will-change: translate;
+  }
+  .spice svg {
+    display: block; width: 100%; height: auto; overflow: visible; opacity: var(--op);
+    filter: blur(var(--blur)) brightness(var(--br)) saturate(.85);
+    animation: spiceTumble var(--spin) linear infinite,
+               spiceSway calc(var(--dur) / 3) ease-in-out infinite alternate;
+  }
+  .spice--back-far { --blur: 2.2px; --br: .55; --op: .8; }
+  .spice--back     { --blur: 1px;   --br: .72; --op: .9; }
+  .spice--front    { --blur: 7px;   --br: .42; --op: .8; }
+  @keyframes spiceFall   { from { translate: 0 calc(var(--size) * var(--u) * -1.4); } to { translate: var(--drift) 100%; } }
+  @keyframes spiceTumble { to { rotate: 360deg; } }
+  @keyframes spiceSway   { from { translate: -14px 0; } to { translate: 14px 0; } }
+  @media (max-width: 767px) { .spice--back-far { display: none; } } /* fewer pieces on phones */
 
   /* ---------- Spinning plate ----------
      Showing: turns slowly forever. Switching dish: the old plate whips away

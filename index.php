@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/includes/bootstrap.php';
+require_once __DIR__ . '/includes/spices.php';
 
 $s            = get_settings();
 $categories   = get_menu_categories();
@@ -47,6 +48,9 @@ function category_pill(array $cat, int $index, bool $active, int $order = 0): st
       <circle cx="720" cy="744" r="516" fill="none" stroke="url(#arcFade)" stroke-width="1.2"/>
     </svg>
 
+    <?= spice_sprite() ?>
+    <?= spice_layer('back') ?>
+
     <h1 class="sr-only"><?= e($s['meta_title']) ?></h1>
 
     <div class="hero__slides" aria-live="polite">
@@ -79,6 +83,8 @@ function category_pill(array $cat, int $index, bool $active, int $order = 0): st
       </ul>
     </div>
     <?php endif; ?>
+
+    <?= spice_layer('front') ?>
   </section>
 
   <!-- ============ ABOUT ============ -->
