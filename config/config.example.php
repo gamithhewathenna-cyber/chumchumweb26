@@ -2,15 +2,19 @@
 /**
  * Chum Chum's — site configuration
  * --------------------------------------------------------------
+
+ * EXAMPLE FILE — copy this to config/config.php on the server and fill in the real values.
+ * config/config.php is NOT stored in git (it holds the database password).
+ *
  * Update the database credentials below with the values from
  * cPanel → MySQL® Databases. On cPanel the database name and user
  * are usually prefixed with your cPanel username, e.g. "cpuser_chumchums".
  */
 
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'tcplckfa_chumchum26');
-define('DB_USER', 'tcplckfa_chumchum26admin');
-define('DB_PASS', 'f}+WJg3Zh~8+BaBW');
+define('DB_NAME', 'cpuser_database');
+define('DB_USER', 'cpuser_user');
+define('DB_PASS', 'your-database-password');
 define('DB_CHARSET', 'utf8mb4');
 
 /* Leave empty to auto-detect. Set to e.g. 'https://chumchums.com.au' if needed. */

@@ -51,6 +51,38 @@ admin_page_start('Dashboard', 'index');
 ?>
   <p class="lead">Welcome back, <strong><?= e($user['username']) ?></strong>. Choose what you'd like to update — changes appear on the website immediately.</p>
 
+  <?php
+  $checks = golive_checks($pdo);
+  $done   = count(array_filter($checks, fn($c) => $c[0]));
+  $todo   = array_filter($checks, fn($c) => !$c[0]);
+  ?>
+  <section class="panel golive<?= $todo ? '' : ' golive--done' ?>" aria-labelledby="golive-title">
+    <div class="golive__head">
+      <h2 class="panel__title" id="golive-title"><?= $todo ? 'Go-live checklist' : 'Ready to go live ✓' ?></h2>
+      <span class="golive__score"><?= $done ?> / <?= count($checks) ?> ready</span>
+    </div>
+    <div class="golive__bar" role="progressbar" aria-valuemin="0" aria-valuemax="<?= count($checks) ?>" aria-valuenow="<?= $done ?>"><span style="width:<?= round($done / max(1, count($checks)) * 100) ?>%"></span></div>
+    <?php if ($todo): ?>
+      <ul class="golive__list">
+        <?php foreach ($todo as [$ok, $title, $detail, $link]): ?>
+          <li class="golive__item">
+            <span class="golive__mark" aria-hidden="true">!</span>
+            <span class="golive__text"><strong><?= e($title) ?></strong><?php if ($detail !== ''): ?><br><span class="muted small"><?= e($detail) ?></span><?php endif; ?></span>
+            <?php if ($link): ?><a class="btn btn--small" href="<?= e($link) ?>">Fix →</a><?php endif; ?>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+    <?php endif; ?>
+    <details class="golive__done">
+      <summary><?= $done ?> item<?= $done === 1 ? '' : 's' ?> done</summary>
+      <ul class="golive__list">
+        <?php foreach ($checks as [$ok, $title]): if (!$ok) continue; ?>
+          <li class="golive__item is-ok"><span class="golive__mark" aria-hidden="true">✓</span><span class="golive__text"><?= e($title) ?></span></li>
+        <?php endforeach; ?>
+      </ul>
+    </details>
+  </section>
+
   <h2 class="section-title">Home Page</h2>
   <div class="cards">
     <?php foreach ($homeCards as [$href, $title, $text, $meta]): ?>

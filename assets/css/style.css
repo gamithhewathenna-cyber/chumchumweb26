@@ -731,6 +731,18 @@ body.drawer-open { overflow: hidden; }
 }
 
 /* ==========================================================================
+   404 page
+   ========================================================================== */
+.notfound { display: grid; justify-items: center; gap: 28px; padding: 24px 20px 100px; text-align: center; }
+.notfound__code {
+  font-size: clamp(110px, 28vw, 260px); font-weight: 700; line-height: .9; letter-spacing: -.04em;
+  background: linear-gradient(180deg, var(--gold), rgba(231, 175, 39, .15)); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.notfound__links { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+.notfound__call { color: var(--text-soft); font-size: 16px; }
+.notfound__call a { color: var(--gold); font-weight: 600; }
+
+/* ==========================================================================
    Gallery page — tile grid (normal / wide / tall / big) + full-screen viewer
    ========================================================================== */
 .gallery { padding: 24px 12px 40px; }

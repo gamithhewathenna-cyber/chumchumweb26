@@ -17,6 +17,16 @@ No frameworks, no build step, no Composer — upload and run on any cPanel host.
 5. Visit the site. If the database can't be reached the page still renders with the
    built-in default content, and the error is written to the PHP error log.
 
+## Going live / deploying an update
+
+1. **config/config.php is not in git** (it holds the database password). On a new server, copy
+   `config/config.example.php` to `config/config.php` and fill in the real values.
+2. Upload all files (including the hidden `.htaccess` files) to `public_html`.
+3. In phpMyAdmin run **`database/updates/ALL-go-live.sql`** — it brings any database up to date and is safe to run again.
+4. Log in at `/admin/` — the **Go-live checklist** on the dashboard lists anything still unfinished (placeholder text,
+   missing links or photos) with a *Fix* button for each.
+5. Submit `https://www.chumchums.com.au/sitemap.xml` in Google Search Console.
+
 ## Folder structure
 
 ```

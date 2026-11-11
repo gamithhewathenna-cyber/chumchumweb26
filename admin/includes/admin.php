@@ -561,6 +561,76 @@ function ensure_about_features_table(PDO $pdo): void
     }
 }
 
+/**
+ * Go-live checklist shown on the dashboard. Each item: [ok (bool), title, detail, link].
+ * It reads the live database, so items tick themselves off as content is finished.
+ */
+function golive_checks(PDO $pdo): array
+{
+    $s = get_settings();
+    $checks = [];
+    $has = fn(string $sql) => (function () use ($pdo, $sql) { try { return (bool) $pdo->query($sql)->fetch(); } catch (Throwable $e) { return false; } })();
+    $count = fn(string $sql) => (function () use ($pdo, $sql) { try { return (int) $pdo->query($sql)->fetchColumn(); } catch (Throwable $e) { return -1; } })();
+    $isLink = fn($v) => !in_array(trim((string) $v), ['', '#'], true);
+
+    // --- Database updates applied?
+    $missing = [];
+    if (!$has("SHOW COLUMNS FROM menu_categories LIKE 'hero_title'")) { $missing[] = 'hero slider'; }
+    if (!$has("SHOW TABLES LIKE 'contact_messages'"))                 { $missing[] = 'contact messages'; }
+    if (!$has("SHOW TABLES LIKE 'about_features'"))                   { $missing[] = 'about cards'; }
+    if (!$has("SHOW TABLES LIKE 'gallery_images'"))                   { $missing[] = 'gallery'; }
+    $col = $pdo->query("SHOW COLUMNS FROM settings LIKE 'setting_value'")->fetch();
+    if ($col && stripos((string) $col['Type'], 'text') !== false && stripos((string) $col['Type'], 'medium') === false && stripos((string) $col['Type'], 'long') === false) { $missing[] = 'large menu storage'; }
+    $checks[] = [!$missing, 'Database is up to date', $missing ? 'Run database/updates/ALL-go-live.sql in phpMyAdmin. Missing: ' . implode(', ', $missing) . '.' : 'All tables and columns are in place.', null];
+
+    // --- Settings & switches
+    $checks[] = [($s['maintenance_mode'] ?? '0') !== '1', 'Maintenance mode is off', 'Visitors must see the website, not the "back soon" page.', 'settings.php?tab=maintenance'];
+    $checks[] = [!APP_DEBUG, 'Error messages are hidden from visitors', 'APP_DEBUG must be false in config/config.php.', null];
+    $checks[] = [strpos(SITE_URL, 'https://') === 0, 'Website address uses https://', 'SITE_URL in config/config.php should be https://www.chumchums.com.au', null];
+    $checks[] = [is_writable(APP_ROOT . '/assets/img/uploads'), 'Photo uploads folder is writable', 'assets/img/uploads must be writable (permissions 755) or photo uploads will fail.', null];
+    $checks[] = [filter_var($s['email'] ?? '', FILTER_VALIDATE_EMAIL) !== false, 'Restaurant email is set', 'Used on the Contact page and for contact-form emails.', 'settings.php?tab=general'];
+
+    // --- Links (buttons with no link are hidden on the website until set)
+    $links = ['order_url' => '"Order Now" button', 'customer_url' => '"Current Customer?" link', 'facebook_url' => 'Facebook', 'instagram_url' => 'Instagram'];
+    $unset = array_values(array_filter($links, fn($label, $key) => !$isLink($s[$key] ?? ''), ARRAY_FILTER_USE_BOTH));
+    $checks[] = [!$unset, 'Buttons & social links are set', $unset ? 'Not set yet (hidden on the website until you add them): ' . implode(', ', $unset) . '.' : 'All set.', 'settings.php?tab=links'];
+
+    // --- Placeholder text left over from the design
+    $where = [];
+    foreach ($s as $key => $value) {
+        if (is_string($value) && stripos($value, 'lorem ipsum') !== false && strpos($key, '_backup') === false) {
+            $where[$key] = true;
+        }
+    }
+    $places = [
+        'footer_text'    => ['Footer text', 'settings.php?tab=footer'],
+        'aboutpage_intro'=> ['About page intro', 'about-page.php?section=header'],
+        'aboutpage_story'=> ['About page "Our Story"', 'about-page.php?section=story'],
+        'aboutpage_why'  => ['About page "Why Choose" text', 'about-page.php?section=why'],
+        'contact_intro'  => ['Contact page intro', 'contact-page.php?tab=page'],
+        'gallery_'       => ['Gallery page text', 'gallery-page.php?tab=page'],
+        'menu_'          => ['Menu page text', 'menu-page.php?tab=page'],
+        'about_'         => ['Home page About section', 'home.php?section=about'],
+    ];
+    foreach ($places as $prefix => [$label, $link]) {
+        $hit = array_filter(array_keys($where), fn($k) => strpos($k, $prefix) === 0);
+        $checks[] = [!$hit, $label . ' — real text', $hit ? 'Still has placeholder "Lorem ipsum" text.' : 'Done.', $link];
+        foreach ($hit as $k) { unset($where[$k]); }
+    }
+    $lorem = $count("SELECT COUNT(*) FROM showcase_items WHERE title LIKE '%lorem ipsum%' OR description LIKE '%lorem ipsum%'");
+    $checks[] = [$lorem <= 0, 'Home page Showcase Grid — real text', $lorem > 0 ? $lorem . ' text card(s) still say "Lorem ipsum".' : 'Done.', 'showcase.php'];
+    $lorem = $count("SELECT COUNT(*) FROM testimonials WHERE is_active = 1 AND (title LIKE '%lorem ipsum%' OR content LIKE '%lorem ipsum%')");
+    $checks[] = [$lorem <= 0, 'Testimonials — real guest reviews', $lorem > 0 ? $lorem . ' review(s) are placeholders. Add real reviews (or hide them — the section disappears when none are shown).' : 'Done.', 'testimonials.php'];
+
+    // --- Pages with real content
+    $noPhoto = $count("SELECT COUNT(*) FROM menu_categories WHERE is_active = 1 AND hero_image = ''");
+    $checks[] = [$noPhoto <= 0, 'Every hero slide has its own photo', $noPhoto > 0 ? $noPhoto . ' slide(s) still show the default plate photo.' : 'Done.', 'categories.php'];
+    $checks[] = [trim((string) ($s['menu_html'] ?? '')) !== '', 'Menu is added', 'Paste your menu in Menu Page → Menu Code.', 'menu-page.php'];
+    $admins = $count('SELECT COUNT(*) FROM admin_users');
+    $checks[] = [$admins >= 1, 'Admin account exists', '', 'account.php'];
+    return $checks;
+}
+
 /** Gallery Page tabs. */
 function gallery_tabs(string $active): void
 {

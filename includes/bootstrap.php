@@ -79,6 +79,12 @@ function tel_link(string $phone): string
     return 'tel:' . $digits;
 }
 
+/** True when a link setting holds a real destination (not empty or the "#" placeholder). */
+function has_link(?string $url): bool
+{
+    return !in_array(trim((string) $url), ['', '#'], true);
+}
+
 /** Resolve a stored URL: absolute URLs, anchors and tel/mailto links pass through. */
 function link_url(?string $url): string
 {

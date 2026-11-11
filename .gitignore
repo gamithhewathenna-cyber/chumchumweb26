@@ -1,0 +1,16 @@
+# Real settings with the database password — never commit (see config/config.example.php)
+config/config.php
+
+# Uploaded content lives on the server, not in git
+assets/img/uploads/*
+!assets/img/uploads/.htaccess
+assets/img/gallery/*
+!assets/img/gallery/.htaccess
+assets/img/menu/*
+!assets/img/menu/.htaccess
+
+# OS / editor clutter
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

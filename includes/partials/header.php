@@ -5,6 +5,40 @@ $pageTitle      = $pageTitle ?? $s['meta_title'];
 $pageDescription = $pageDescription ?? $s['meta_description'];
 $nav             = get_navigation();
 $current         = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
+
+// Absolute addresses: site root (e.g. "https://www.chumchums.com.au") + this page's canonical URL
+$siteRoot = (function () {
+    if (preg_match('~^(https?://[^/]+)~i', base_url(''), $m)) {
+        return $m[1];
+    }
+    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+    return ($https ? 'https' : 'http') . '://' . preg_replace('~[^a-z0-9.:-]~i', '', (string) ($_SERVER['HTTP_HOST'] ?? 'localhost'));
+})();
+/** "/menu.php" or "https://…/menu.php?v=1" → "https://host/menu.php" (cache-buster removed) */
+$absolute = fn(string $url) => $siteRoot . '/' . ltrim(preg_replace(['~^https?://[^/]+~i', '~\?.*$~'], '', $url), '/');
+// The homepage's canonical address is "/", never "/index.php". Pages may set $canonical = '' to skip it (e.g. 404).
+$canonical  = $canonical ?? $absolute(base_url($current === 'index.php' ? '' : $current));
+$shareImage = $absolute(img_url(plate_image((string) ($heroPreload ?? $s['hero_image']))));
+
+// Restaurant details for Google (structured data)
+$schema = [
+    '@context'      => 'https://schema.org',
+    '@type'         => 'Restaurant',
+    'name'          => $s['site_name'],
+    'url'           => $absolute(base_url('')),
+    'image'         => $shareImage,
+    'logo'          => $absolute(asset('img/logo.png')),
+    'servesCuisine' => ['Sri Lankan', 'Fusion'],
+    'telephone'     => $s['phone'],
+    'email'         => $s['email'],
+    'address'       => ['@type' => 'PostalAddress', 'streetAddress' => rtrim(trim($s['address_line1']), ','),
+                        'addressLocality' => 'Clayton', 'addressRegion' => 'VIC', 'addressCountry' => 'AU'],
+    'hasMenu'       => $absolute(base_url('menu.php')),
+];
+$sameAs = array_values(array_filter([$s['facebook_url'] ?? '', $s['instagram_url'] ?? ''], 'has_link'));
+if ($sameAs) {
+    $schema['sameAs'] = $sameAs;
+}
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,11 +48,21 @@ $current         = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
 <meta name="description" content="<?= e($pageDescription) ?>">
 <meta name="theme-color" content="#000000">
 <meta name="google-site-verification" content="cuSIctaQ66p265EZgNNCAQYhP_QxzRI16NgKXT2ZPqk" />
+<?php if (!empty($robots)): ?><meta name="robots" content="<?= e($robots) ?>">
+<?php endif; ?>
+<?php if ($canonical): ?><link rel="canonical" href="<?= e($canonical) ?>">
+<meta property="og:url" content="<?= e($canonical) ?>">
+<?php endif; ?>
+<meta property="og:site_name" content="<?= e($s['site_name']) ?>">
 <meta property="og:title" content="<?= e($pageTitle) ?>">
 <meta property="og:description" content="<?= e($pageDescription) ?>">
 <meta property="og:type" content="website">
-<meta property="og:image" content="<?= e(img_url($s['hero_image'])) ?>">
+<meta property="og:image" content="<?= e($shareImage) ?>">
+<meta property="og:locale" content="en_AU">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="<?= e(asset('img/logo.png')) ?>">
+<link rel="apple-touch-icon" href="<?= e(asset('img/logo.png')) ?>">
+<script type="application/ld+json"><?= json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?></script>
 <link rel="preload" href="<?= e(asset('fonts/dm-sans-latin-opsz-normal.woff2')) ?>" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="<?= e(img_url($heroPreload ?? $s['hero_image'])) ?>" as="image">
 <link rel="stylesheet" href="<?= e(asset('css/style.css')) ?>">
@@ -56,12 +100,17 @@ $current         = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
       </ul>
     </nav>
 
+    <?php /* Buttons only appear once a real link is set in Admin → Site Settings → Links (no dead "#" buttons) */ ?>
     <div class="site-header__actions">
-      <a class="current-customer" href="<?= e(link_url($s['customer_url'])) ?>">Current Customer?</a>
-      <a class="btn-pill btn-pill--order" href="<?= e(link_url($s['order_url'])) ?>">
-        <span class="btn-pill__icon" aria-hidden="true"><?= icon_arrow() ?></span>
-        <span class="btn-pill__text">Order Now</span>
-      </a>
+      <?php if (has_link($s['customer_url'])): ?>
+        <a class="current-customer" href="<?= e(link_url($s['customer_url'])) ?>">Current Customer?</a>
+      <?php endif; ?>
+      <?php if (has_link($s['order_url'])): ?>
+        <a class="btn-pill btn-pill--order" href="<?= e(link_url($s['order_url'])) ?>">
+          <span class="btn-pill__icon" aria-hidden="true"><?= icon_arrow() ?></span>
+          <span class="btn-pill__text">Order Now</span>
+        </a>
+      <?php endif; ?>
     </div>
   </div>
 </header>
@@ -79,11 +128,15 @@ $current         = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
       </ul>
     </nav>
     <div class="drawer__actions">
-      <a class="current-customer" href="<?= e(link_url($s['customer_url'])) ?>">Current Customer?</a>
-      <a class="btn-pill btn-pill--order" href="<?= e(link_url($s['order_url'])) ?>">
-        <span class="btn-pill__icon" aria-hidden="true"><?= icon_arrow() ?></span>
-        <span class="btn-pill__text">Order Now</span>
-      </a>
+      <?php if (has_link($s['customer_url'])): ?>
+        <a class="current-customer" href="<?= e(link_url($s['customer_url'])) ?>">Current Customer?</a>
+      <?php endif; ?>
+      <?php if (has_link($s['order_url'])): ?>
+        <a class="btn-pill btn-pill--order" href="<?= e(link_url($s['order_url'])) ?>">
+          <span class="btn-pill__icon" aria-hidden="true"><?= icon_arrow() ?></span>
+          <span class="btn-pill__text">Order Now</span>
+        </a>
+      <?php endif; ?>
       <a class="drawer__phone" href="<?= e(tel_link($s['phone'])) ?>"><?= e($s['phone']) ?></a>
     </div>
   </aside>

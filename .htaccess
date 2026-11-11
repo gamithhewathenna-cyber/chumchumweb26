@@ -1,6 +1,7 @@
 # Chum Chum's — site-wide Apache rules
 Options -Indexes
 DirectoryIndex index.php
+ErrorDocument 404 /404.php
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
@@ -16,12 +17,15 @@ DirectoryIndex index.php
   # Sitemap for search engines, built live by sitemap.php
   RewriteRule ^sitemap\.xml$ sitemap.php [L]
 
+  # Hidden folders and files (.git, .env …) — but keep .well-known for SSL certificates
+  RewriteRule (^|/)\.(?!well-known/) - [F,L]
+
   # Private folders (each also has its own .htaccess)
   RewriteRule ^(config|database|admin/includes)(/|$) - [F,L]
 </IfModule>
 
 # Never serve source, dump or hidden files
-<FilesMatch "(^\.|\.(sql|md|log|ini|bak|sh)$)">
+<FilesMatch "(^\.|\.(sql|md|log|ini|bak|sh|example\.php)$)">
   <IfModule mod_authz_core.c>
     Require all denied
   </IfModule>
@@ -30,3 +34,41 @@ DirectoryIndex index.php
     Deny from all
   </IfModule>
 </FilesMatch>
+
+# ---------- Security headers ----------
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+  # Remember to use HTTPS (only sent over HTTPS)
+  Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
+  Header unset X-Powered-By
+</IfModule>
+
+# ---------- Speed: compress text files ----------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml application/xml application/javascript application/json image/svg+xml
+</IfModule>
+
+# ---------- Speed: let browsers keep files (CSS/JS/images carry a ?v= version, so changes still show at once) ----------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 hour"
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType application/xml "access plus 1 hour"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/javascript "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType application/font-woff2 "access plus 1 year"
+</IfModule>
+<IfModule mod_mime.c>
+  AddType font/woff2 .woff2
+  AddType image/webp .webp
+</IfModule>

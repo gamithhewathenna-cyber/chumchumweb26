@@ -25,10 +25,16 @@
         <a href="<?= e(tel_link($s['phone'])) ?>"><?= e($s['phone']) ?></a>
         <a href="mailto:<?= e($s['email']) ?>"><?= e($s['email']) ?></a>
       </address>
-      <div class="social">
-        <a href="<?= e(link_url($s['facebook_url'])) ?>" aria-label="Facebook" target="_blank" rel="noopener"><?= icon_facebook() ?></a>
-        <a href="<?= e(link_url($s['instagram_url'])) ?>" aria-label="Instagram" target="_blank" rel="noopener"><?= icon_instagram() ?></a>
-      </div>
+      <?php if (has_link($s['facebook_url']) || has_link($s['instagram_url'])): ?>
+        <div class="social">
+          <?php if (has_link($s['facebook_url'])): ?>
+            <a href="<?= e(link_url($s['facebook_url'])) ?>" aria-label="Facebook" target="_blank" rel="noopener"><?= icon_facebook() ?></a>
+          <?php endif; ?>
+          <?php if (has_link($s['instagram_url'])): ?>
+            <a href="<?= e(link_url($s['instagram_url'])) ?>" aria-label="Instagram" target="_blank" rel="noopener"><?= icon_instagram() ?></a>
+          <?php endif; ?>
+        </div>
+      <?php endif; ?>
     </div>
   </div>
   <div class="site-footer__bottom">
