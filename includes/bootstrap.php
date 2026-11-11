@@ -7,23 +7,19 @@ declare(strict_types=1);
 define('APP_ROOT', dirname(__DIR__));
 
 // config/config.php holds the database password, so it is NOT stored in git — it lives only on the server.
-// If it's missing (e.g. a deploy removed it), explain how to fix it instead of failing with a blank HTTP 500.
-if (!is_file(APP_ROOT . '/config/config.php')) {
-    error_log('[ChumChums] config/config.php is missing — open /admin/ to enter the database details (or copy config/config.example.php).');
-    // At /admin/: a one-time form that writes config/config.php on the server
+// If it's missing (e.g. a deploy removed it):
+//  - the public website keeps working with its built-in content (no database)
+//  - /admin/ shows a one-time form that writes config/config.php on the server
+if (is_file(APP_ROOT . '/config/config.php')) {
+    require_once APP_ROOT . '/config/config.php';
+} else {
     if (strpos(str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? '')), '/admin/') !== false) {
         require __DIR__ . '/installer.php';
         installer_run(APP_ROOT . '/config/config.php');
     }
-    http_response_code(503);
-    header('Retry-After: 600');
-    echo '<!DOCTYPE html><meta charset="utf-8"><meta name="robots" content="noindex"><title>Back soon</title>'
-        . '<div style="font-family:system-ui,sans-serif;max-width:560px;margin:15vh auto;padding:0 20px;color:#222">'
-        . '<h1>We\'ll be back shortly</h1><p>The website is being updated. Please try again in a few minutes.</p>'
-        . '<!-- Site owner: open /admin/ to finish setup. --></div>';
-    exit;
+    define('SITE_URL', 'https://www.chumchums.com.au');
+    define('CONFIG_MISSING', true);
 }
-require_once APP_ROOT . '/config/config.php';
 foreach (['DB_HOST' => 'localhost', 'DB_NAME' => '', 'DB_USER' => '', 'DB_PASS' => '', 'DB_CHARSET' => 'utf8mb4', 'SITE_URL' => '', 'APP_DEBUG' => false] as $const => $default) {
     if (!defined($const)) {
         define($const, $default); // tolerate an older or incomplete config file
@@ -47,6 +43,9 @@ function db(): ?PDO
     static $pdo = false;
     if ($pdo !== false) {
         return $pdo;
+    }
+    if (defined('CONFIG_MISSING') || DB_NAME === '') {
+        return $pdo = null; // no settings file yet — use the built-in content
     }
     try {
         $dsn = sprintf('mysql:host=%s;dbname=%s;charset=%s', DB_HOST, DB_NAME, DB_CHARSET);
