@@ -9,14 +9,18 @@ define('APP_ROOT', dirname(__DIR__));
 // config/config.php holds the database password, so it is NOT stored in git — it lives only on the server.
 // If it's missing (e.g. a deploy removed it), explain how to fix it instead of failing with a blank HTTP 500.
 if (!is_file(APP_ROOT . '/config/config.php')) {
-    error_log('[ChumChums] config/config.php is missing — copy config/config.example.php to config/config.php and fill in the database details.');
+    error_log('[ChumChums] config/config.php is missing — open /admin/ to enter the database details (or copy config/config.example.php).');
+    // At /admin/: a one-time form that writes config/config.php on the server
+    if (strpos(str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? '')), '/admin/') !== false) {
+        require __DIR__ . '/installer.php';
+        installer_run(APP_ROOT . '/config/config.php');
+    }
     http_response_code(503);
     header('Retry-After: 600');
     echo '<!DOCTYPE html><meta charset="utf-8"><meta name="robots" content="noindex"><title>Back soon</title>'
         . '<div style="font-family:system-ui,sans-serif;max-width:560px;margin:15vh auto;padding:0 20px;color:#222">'
         . '<h1>We\'ll be back shortly</h1><p>The website is being updated. Please try again in a few minutes.</p>'
-        . '<!-- Site owner: config/config.php is missing on the server. Copy config/config.example.php to config/config.php '
-        . 'and fill in DB_NAME, DB_USER, DB_PASS and SITE_URL. --></div>';
+        . '<!-- Site owner: open /admin/ to finish setup. --></div>';
     exit;
 }
 require_once APP_ROOT . '/config/config.php';
