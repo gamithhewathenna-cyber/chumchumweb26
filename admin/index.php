@@ -32,6 +32,10 @@ $menuCards = [
     ['menu-page.php?tab=images', 'Menu Images',         'Upload photos for the menu and copy their address.', null],
     ['menu-page.php?tab=page',   'Title, Banner & SEO', 'Page heading, intro text and banner photo.', null],
 ];
+$galleryCards = [
+    ['gallery-page.php',          'Photos',      'Upload photos, set captions and tile sizes, reorder or hide them.', count_rows($pdo, 'SELECT COUNT(*) FROM gallery_images WHERE is_active = 1') . ' shown'],
+    ['gallery-page.php?tab=page', 'Title & SEO', 'Page heading, intro text and Google description.', null],
+];
 $unreadMsgs   = unread_message_count();
 $contactCards = [
     ['messages.php',     'Messages',     'Everything sent through the website contact form.',
@@ -74,6 +78,17 @@ admin_page_start('Dashboard', 'index');
       <a class="card card--link" href="<?= e($href) ?>">
         <h2><?= e($title) ?></h2>
         <p><?= e($text) ?></p>
+      </a>
+    <?php endforeach; ?>
+  </div>
+
+  <h2 class="section-title">Gallery Page</h2>
+  <div class="cards">
+    <?php foreach ($galleryCards as [$href, $title, $text, $meta]): ?>
+      <a class="card card--link" href="<?= e($href) ?>">
+        <h2><?= e($title) ?></h2>
+        <p><?= e($text) ?></p>
+        <?php if ($meta !== null): ?><span class="badge"><?= e($meta) ?></span><?php endif; ?>
       </a>
     <?php endforeach; ?>
   </div>

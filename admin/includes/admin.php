@@ -486,6 +486,7 @@ function admin_nav(): array
         'home'     => ['Home Page',       'M4 5h16v14H4zM4 9h16M8 13h8M8 16h5'],
         'about-page' => ['About Page',    'M12 8h.01M11 12h1v5h1M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z'],
         'menu-page' => ['Menu Page',      'M7 3v8m-2-8v4a2 2 0 0 0 4 0V3M7 11v10M16 3c-2 1-3 4-3 7h3v11'],
+        'gallery-page' => ['Gallery Page', 'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9h.01'],
         'messages' => ['Contact Page',    'M4 6h16v12H4zM4 7l8 6 8-6'],
         'settings' => ['Site Settings',   'M4 6h16M4 12h16M4 18h10'],
         'account'  => ['Account & Users', 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0'],
@@ -557,6 +558,40 @@ function ensure_about_features_table(PDO $pdo): void
     $st = $pdo->prepare('INSERT INTO about_features (title, text, sort_order) VALUES (?, ?, ?)');
     foreach ($defaults as $i => $f) {
         $st->execute([$f['title'], $f['text'], $i + 1]);
+    }
+}
+
+/** Gallery Page tabs. */
+function gallery_tabs(string $active): void
+{
+    $tabs = ['photos' => ['Photos', 'gallery-page.php'], 'page' => ['Title & SEO', 'gallery-page.php?tab=page']];
+    echo '<nav class="tabs" aria-label="Gallery page sections">';
+    foreach ($tabs as $key => [$label, $url]) {
+        echo '<a href="', e($url), '"', $key === $active ? ' aria-current="page"' : '', '>', e($label), '</a>';
+    }
+    echo '</nav>';
+}
+
+/** Gallery table — created (and filled with the site's existing photos) the first time it's needed. */
+function ensure_gallery_table(PDO $pdo): void
+{
+    if ($pdo->query("SHOW TABLES LIKE 'gallery_images'")->fetch()) {
+        return;
+    }
+    $defaults = default_gallery_images();
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `gallery_images` (
+        `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `image`      VARCHAR(255) NOT NULL,
+        `caption`    VARCHAR(200) NOT NULL DEFAULT '',
+        `size`       ENUM('normal','wide','tall','big') NOT NULL DEFAULT 'normal',
+        `sort_order` INT NOT NULL DEFAULT 0,
+        `is_active`  TINYINT(1) NOT NULL DEFAULT 1,
+        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $st = $pdo->prepare('INSERT INTO gallery_images (image, caption, size, sort_order) VALUES (?, ?, ?, ?)');
+    foreach ($defaults as $i => $g) {
+        $st->execute([$g['image'], $g['caption'], $g['size'], $i + 1]);
     }
 }
 

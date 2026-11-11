@@ -54,6 +54,11 @@ function default_settings(): array
         'aboutpage_why_text'         => 'Lorem Ipsum Dolor Sit Amet Consectetur. Adipiscing Potenti Sit Risus Mattis Placerat Risus. Gravida Ac Duis Sed Placerat.',
         'aboutpage_show_reservation' => '1',
         'aboutpage_meta_description' => "Chum Chum's brings the vibrant flavours of Sri Lankan cuisine to Clayton, Melbourne — traditional favourites and modern fusion dishes, made fresh with bold spices.",
+        // Gallery page (the photos themselves are managed in Admin → Gallery Page)
+        'gallery_title'            => 'Gallery',
+        'gallery_intro'            => 'A Taste Of Life At Chum Chum\'s — Our Dishes, Our Kitchen And The Warm, Busy Dining Room In Clayton. Click Any Photo To See It Bigger.',
+        'gallery_empty_text'       => 'Our gallery is coming soon — check back shortly for photos of our food and restaurant.',
+        'gallery_meta_description' => "Photos of the food, kitchen and dining room at Chum Chum's Sri Lankan Cuisine Restaurant in Clayton, Melbourne.",
         // Menu page (the menu itself is pasted as HTML + CSS in Admin → Menu Page)
         'menu_title'            => 'Menu',
         'menu_intro'            => 'Explore Our Menu Of Modern Sri Lankan Favourites And Fusion Dishes — From Kottu And Rice & Curry To Biryani And Fresh Seafood, Made Fresh Every Day.',
@@ -118,7 +123,7 @@ function get_navigation(): array
         ['label' => 'Home',       'url' => 'index.php'],
         ['label' => 'About Us',   'url' => 'about.php'],
         ['label' => 'Menu',       'url' => 'menu.php'],
-        ['label' => 'Gallery',    'url' => '#gallery'],
+        ['label' => 'Gallery',    'url' => 'gallery.php'],
         ['label' => 'Contact Us', 'url' => 'contact.php'],
     ];
 }
@@ -128,9 +133,39 @@ function get_footer_links(): array
     return [
         ['label' => 'Home',       'url' => 'index.php'],
         ['label' => 'Menu',       'url' => 'menu.php'],
-        ['label' => 'Gallery',    'url' => '#gallery'],
+        ['label' => 'Gallery',    'url' => 'gallery.php'],
         ['label' => 'Contact us', 'url' => 'contact.php'],
     ];
+}
+
+/**
+ * Gallery photos. size = normal | wide (2 columns) | tall (2 rows) | big (2 × 2).
+ * The defaults (also used to fill the table the first time) are photos already on the site.
+ */
+function default_gallery_images(): array
+{
+    $g = static fn(string $image, string $caption, string $size) => ['image' => $image, 'caption' => $caption, 'size' => $size];
+    return [
+        $g('yellow-rice-curry.jpg', 'Yellow Rice & Curry on banana leaf', 'tall'),
+        $g('about-banner.jpg',      'Fresh pasta, made to order',         'wide'),
+        $g('seafood-soup.jpg',      'Seafood soup',                       'normal'),
+        $g('about-story.jpg',       'Our dining room in Clayton',         'big'),
+        $g('buddha-bowl.jpg',       'Fresh Buddha bowl',                  'normal'),
+        $g('about-fork.jpg',        'Pesto noodles',                      'tall'),
+        $g('toasted-sandwich.jpg',  'Toasted sandwich',                   'normal'),
+        $g('contact-banner.jpg',    'BBQ ribs platter',                   'wide'),
+        $g('chef.jpg',              'Plating up in the kitchen',          'tall'),
+        $g('hero-plate.webp',       'Seafood & chicken fried rice',       'normal'),
+        $g('reservation.jpg',       'Dinner at Chum Chum\'s',             'wide'),
+    ];
+}
+
+function get_gallery_images(): array
+{
+    return fetch_or_default(
+        'SELECT image, caption, size FROM gallery_images WHERE is_active = 1 ORDER BY sort_order, id',
+        default_gallery_images()
+    );
 }
 
 /** "Why Choose" cards on the About page. */

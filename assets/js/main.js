@@ -96,6 +96,67 @@
     });
   }
 
+  /* ---------- Gallery: full-screen viewer ---------- */
+  var lb = document.getElementById('lightbox');
+  var shots = Array.prototype.slice.call(document.querySelectorAll('[data-gallery-index]'));
+  if (lb && shots.length) {
+    var lbImg = lb.querySelector('.lightbox__img');
+    var lbText = lb.querySelector('.lightbox__text');
+    var lbCount = lb.querySelector('.lightbox__count');
+    var lbIndex = 0, lbOpener = null;
+
+    function lbShow(i) {
+      lbIndex = (i + shots.length) % shots.length;
+      var a = shots[lbIndex];
+      lbImg.src = a.getAttribute('href');
+      lbImg.alt = a.getAttribute('data-caption') || '';
+      lbText.textContent = a.getAttribute('data-caption') || '';
+      lbCount.textContent = (lbIndex + 1) + ' / ' + shots.length;
+      if (lbImg.animate && !calm) lbImg.animate([{ opacity: 0, transform: 'scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 350, easing: 'ease-out' });
+      // warm up the neighbours so next/previous are instant
+      [lbIndex + 1, lbIndex - 1].forEach(function (n) { var x = shots[(n + shots.length) % shots.length]; (new Image()).src = x.getAttribute('href'); });
+    }
+    function lbOpen(i, opener) {
+      lbOpener = opener || null;
+      lb.hidden = false;
+      document.body.classList.add('lightbox-open');
+      lbShow(i);
+      lb.querySelector('.lightbox__close').focus();
+    }
+    function lbClose() {
+      lb.hidden = true;
+      document.body.classList.remove('lightbox-open');
+      if (lbOpener) lbOpener.focus();
+    }
+    shots.forEach(function (a, i) {
+      a.addEventListener('click', function (e) { e.preventDefault(); lbOpen(i, a); });
+    });
+    lb.addEventListener('click', function (e) {
+      if (e.target.closest('[data-lightbox-prev]')) lbShow(lbIndex - 1);
+      else if (e.target.closest('[data-lightbox-next]')) lbShow(lbIndex + 1);
+      else if (e.target.closest('[data-lightbox-close]') || e.target === lb || e.target.classList.contains('lightbox__figure')) lbClose();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (lb.hidden) return;
+      if (e.key === 'Escape') lbClose();
+      else if (e.key === 'ArrowRight') lbShow(lbIndex + 1);
+      else if (e.key === 'ArrowLeft') lbShow(lbIndex - 1);
+      else if (e.key === 'Tab') { // keep focus inside the viewer
+        var f = lb.querySelectorAll('button'); var first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+    var lx = null;
+    lb.addEventListener('touchstart', function (e) { lx = e.touches[0].clientX; }, { passive: true });
+    lb.addEventListener('touchend', function (e) {
+      if (lx === null) return;
+      var dx = e.changedTouches[0].clientX - lx;
+      if (Math.abs(dx) > 50) lbShow(lbIndex + (dx < 0 ? 1 : -1));
+      lx = null;
+    });
+  }
+
   /* ---------- Contact form ---------- */
   var cform = document.querySelector('[data-contact-form]');
   if (cform) {
