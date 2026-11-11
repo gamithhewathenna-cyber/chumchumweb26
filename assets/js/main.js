@@ -95,8 +95,23 @@
     var HERO_DELAY = 5000;
 
     function showDish(i) {
-      heroIndex = (i + heroSlides.length) % heroSlides.length;
+      var next = (i + heroSlides.length) % heroSlides.length;
+      if (next === heroIndex) return;
+
+      // The outgoing plate whips away from the exact angle its slow spin had reached
+      var leaving = heroSlides[heroIndex];
+      var plate = leaving.querySelector('.hero__plate img');
+      if (plate) {
+        var angle = getComputedStyle(plate).rotate;
+        plate.style.setProperty('--from', angle && angle !== 'none' ? angle : '0deg');
+      }
+      leaving.classList.remove('is-first');
+      leaving.classList.add('is-leaving');
+      setTimeout(function () { if (!leaving.classList.contains('is-active')) leaving.classList.remove('is-leaving'); }, 800);
+
+      heroIndex = next;
       heroSlides.forEach(function (s, n) {
+        if (n === heroIndex) s.classList.remove('is-leaving');
         var on = n === heroIndex;
         s.classList.toggle('is-active', on);
         if (on) s.removeAttribute('aria-hidden'); else s.setAttribute('aria-hidden', 'true');

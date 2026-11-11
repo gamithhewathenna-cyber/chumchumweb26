@@ -21,7 +21,7 @@ function default_settings(): array
         'hero_badge'        => 'Ingredients That Matter',
         'hero_title'        => 'Seafood & Chicken Fried Rice',
         'hero_subtitle'     => 'With Fresh Vegetables And Egg',
-        'hero_image'        => 'hero-bowl.webp',
+        'hero_image'        => 'hero-plate.webp',
         'about_badge'       => 'Sri Lankan Cuisine Restaurant',
         'about_title'       => 'Founded With The Sole Intention Of Presenting Modern Sri Lankan Flavors To The Live Hood Melbourne',
         'about_text'        => '"Chum Chum\'s" Sri Lankan Cuisine Restaurant Is Founded With The Sole Intention Of Presenting Modern Sri Lankan Flavors To The Live Hood Of Melbourne. With A Modern Touch To The Traditional Recipes, Various Fusion Dishes Will Be Presented Six Days A Week Till Midnight.',
@@ -109,7 +109,7 @@ function get_menu_categories(): array
     };
     $defaults = [
         $c('Submarine',    'thumb-submarine.png',   'left',  'Chicken Submarine',            'Toasted Bread, Fresh Salad And Signature Sauce'),
-        $c('Fried Rice',   'thumb-fried-rice.png',  'left',  'Seafood & Chicken Fried Rice', 'With Fresh Vegetables And Egg', 'hero-bowl.webp'),
+        $c('Fried Rice',   'thumb-fried-rice.png',  'left',  'Seafood & Chicken Fried Rice', 'With Fresh Vegetables And Egg', 'hero-plate.webp'),
         $c('Kottu',        'thumb-kottu.png',       'left',  'Chicken Kottu Roti',           'Chopped Roti, Vegetables And Spicy Curry Gravy'),
         $c('Cuttle Fish',  'thumb-cuttle-fish.png', 'right', 'Devilled Cuttle Fish',         'Crispy, Spicy And Tossed With Peppers And Onion'),
         $c('Rice & Curry', 'thumb-rice-curry.png',  'right', 'Sri Lankan Rice & Curry',      'Rice With Curries, Sambol And Papadam'),
@@ -132,6 +132,15 @@ function get_menu_categories(): array
 }
 
 /**
+ * The original hero photo (hero-bowl.webp) shows only the top half of the bowl, which can't spin.
+ * hero-plate.webp is the same bowl rebuilt as a full round plate — use it wherever the old one is set.
+ */
+function plate_image(string $file): string
+{
+    return $file === 'hero-bowl.webp' ? 'hero-plate.webp' : $file;
+}
+
+/**
  * Hero slides — one per active menu category, in pill order (left side, then right).
  * Empty slide fields fall back to the Home Page → Hero defaults.
  * Returns [slides, index of the slide to show first].
@@ -146,13 +155,13 @@ function get_hero_slides(array $s, array $orderedCats): array
             'badge'     => trim((string) ($cat['hero_badge'] ?? '')) ?: $s['hero_badge'],
             'title'     => trim((string) ($cat['hero_title'] ?? '')) ?: $cat['name'],
             'subtitle'  => trim((string) ($cat['hero_subtitle'] ?? '')),
-            'image'     => $image !== '' ? $image : $s['hero_image'],
+            'image'     => plate_image($image !== '' ? $image : $s['hero_image']),
             'has_image' => $image !== '',
         ];
     }
     if (!$slides) {
         $slides[] = ['name' => '', 'badge' => $s['hero_badge'], 'title' => $s['hero_title'],
-                     'subtitle' => $s['hero_subtitle'], 'image' => $s['hero_image'], 'has_image' => true];
+                     'subtitle' => $s['hero_subtitle'], 'image' => plate_image($s['hero_image']), 'has_image' => true];
     }
     // Open on the first dish that has its own photo
     $start = 0;

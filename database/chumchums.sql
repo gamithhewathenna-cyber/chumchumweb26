@@ -31,7 +31,7 @@ INSERT INTO `settings` (`setting_key`, `setting_value`) VALUES
 ('hero_badge',        'Ingredients That Matter'),
 ('hero_title',        'Seafood & Chicken Fried Rice'),
 ('hero_subtitle',     'With Fresh Vegetables And Egg'),
-('hero_image',        'hero-bowl.webp'),
+('hero_image',        'hero-plate.webp'),
 ('about_badge',       'Sri Lankan Cuisine Restaurant'),
 ('about_title',       'Founded With The Sole Intention Of Presenting Modern Sri Lankan Flavors To The Live Hood Melbourne'),
 ('about_text',        '"Chum Chum''s" Sri Lankan Cuisine Restaurant Is Founded With The Sole Intention Of Presenting Modern Sri Lankan Flavors To The Live Hood Of Melbourne. With A Modern Touch To The Traditional Recipes, Various Fusion Dishes Will Be Presented Six Days A Week Till Midnight.'),
@@ -71,7 +71,7 @@ CREATE TABLE `menu_categories` (
 
 INSERT INTO `menu_categories` (`name`, `slug`, `thumbnail`, `link_url`, `side`, `sort_order`, `hero_title`, `hero_subtitle`, `hero_image`) VALUES
 ('Submarine',    'submarine',    'thumb-submarine.png',   '#menu', 'left',  1, 'Chicken Submarine',            'Toasted Bread, Fresh Salad And Signature Sauce',  ''),
-('Fried Rice',   'fried-rice',   'thumb-fried-rice.png',  '#menu', 'left',  2, 'Seafood & Chicken Fried Rice', 'With Fresh Vegetables And Egg',                   'hero-bowl.webp'),
+('Fried Rice',   'fried-rice',   'thumb-fried-rice.png',  '#menu', 'left',  2, 'Seafood & Chicken Fried Rice', 'With Fresh Vegetables And Egg',                   'hero-plate.webp'),
 ('Kottu',        'kottu',        'thumb-kottu.png',       '#menu', 'left',  3, 'Chicken Kottu Roti',           'Chopped Roti, Vegetables And Spicy Curry Gravy',  ''),
 ('Cuttle Fish',  'cuttle-fish',  'thumb-cuttle-fish.png', '#menu', 'right', 1, 'Devilled Cuttle Fish',         'Crispy, Spicy And Tossed With Peppers And Onion', ''),
 ('Rice & Curry', 'rice-curry',   'thumb-rice-curry.png',  '#menu', 'right', 2, 'Sri Lankan Rice & Curry',      'Rice With Curries, Sambol And Papadam',           ''),

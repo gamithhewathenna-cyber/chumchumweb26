@@ -141,7 +141,7 @@ if ($action === 'new' || $action === 'edit') {
         <h2 class="panel__title">Slide</h2>
         <p class="muted small">Clicking this pill shows this slide in the big hero area. Empty fields use the defaults from the Hero tab.</p>
         <?= field_image('hero_image', 'Slide dish photo', $form['hero_image'],
-            'Large cut-out dish photo on a transparent or black background, about 1215 × 747 px.'
+            'The plate spins on the website, so use a SQUARE photo of a round plate or bowl shot from directly above, cut out on a transparent background (PNG or WebP), about 1200 × 1200 px. Any photo is shown cropped to a circle.'
             . ($form['hero_image'] === '' ? ' Until you add one, the default hero photo is shown.' : '')) ?>
         <?php if ($form['hero_image'] !== ''): ?>
           <?= field_checkbox('hero_image_remove', 'Remove this photo (use the default hero photo instead)', false) ?>

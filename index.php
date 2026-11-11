@@ -51,7 +51,7 @@ function category_pill(array $cat, int $index, bool $active, int $order = 0): st
 
     <div class="hero__slides" aria-live="polite">
       <?php foreach ($heroSlides as $i => $slide): $active = $i === $heroStart; ?>
-        <div class="hero__slide<?= $active ? ' is-active' : '' ?>" id="hero-slide-<?= $i ?>" role="group"
+        <div class="hero__slide<?= $active ? ' is-active is-first' : '' ?>" id="hero-slide-<?= $i ?>" role="group"
              aria-roledescription="slide" aria-label="<?= e($slide['name'] ?: $slide['title']) ?>"<?= $active ? '' : ' aria-hidden="true"' ?>>
           <div class="hero__head">
             <?php if ($slide['badge'] !== ''): ?><span class="tag"><?= e($slide['badge']) ?></span><?php endif; ?>
@@ -60,8 +60,10 @@ function category_pill(array $cat, int $index, bool $active, int $order = 0): st
           </div>
           <div class="hero__dish">
             <span class="hero__steam" aria-hidden="true"><i></i><i></i><i></i></span>
-            <img src="<?= e(img_url($slide['image'])) ?>" alt="<?= e(trim($slide['title'] . ' ' . $slide['subtitle'])) ?>"
-                 width="1215" height="747"<?= $active ? ' fetchpriority="high"' : ' decoding="async"' ?>>
+            <span class="hero__plate">
+              <img src="<?= e(img_url($slide['image'])) ?>" alt="<?= e(trim($slide['title'] . ' ' . $slide['subtitle'])) ?>"
+                   width="1200" height="1200"<?= $active ? ' fetchpriority="high"' : ' decoding="async"' ?>>
+            </span>
           </div>
         </div>
       <?php endforeach; ?>
