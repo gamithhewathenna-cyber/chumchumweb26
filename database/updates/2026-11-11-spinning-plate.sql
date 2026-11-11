@@ -6,6 +6,8 @@
 -- safe to run more than once and never touches photos you uploaded.
 -- ==============================================================
 
+SET NAMES utf8mb4;
+
 UPDATE `settings`
    SET `setting_value` = 'hero-plate.webp'
  WHERE `setting_key` = 'hero_image' AND `setting_value` = 'hero-bowl.webp';

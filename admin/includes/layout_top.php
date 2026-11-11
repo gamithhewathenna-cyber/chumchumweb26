@@ -31,6 +31,9 @@
         <li><a href="<?= e($key) ?>.php"<?= $key === $active ? ' aria-current="page"' : '' ?>>
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="<?= e($path) ?>"/></svg>
           <?= e($label) ?>
+          <?php if ($key === 'messages' && ($unread = unread_message_count()) > 0): ?>
+            <span class="nav-badge" aria-label="<?= $unread ?> unread messages"><?= $unread > 99 ? '99+' : $unread ?></span>
+          <?php endif; ?>
         </a></li>
       <?php endforeach; ?>
     </ul>

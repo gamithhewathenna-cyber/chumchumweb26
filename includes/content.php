@@ -38,6 +38,17 @@ function default_settings(): array
         'maintenance_mode'    => '0',
         'maintenance_title'   => "We'll Be Back Soon",
         'maintenance_message' => "Our website is getting a fresh new look. We're still serving delicious Sri Lankan food — give us a call or drop us an email in the meantime.",
+        // Contact page
+        'contact_title'            => 'Contact Us',
+        'contact_intro'            => 'Lorem Ipsum Dolor Sit Amet Consectetur. Adipiscing Potenti Sit Risus Mattis Placerat Risus. Gravida Ac Duis Sed Placerat. Vel Dictumst In Cras Viverra Pretium Massa.',
+        'contact_banner'           => 'contact-banner.jpg',
+        'contact_heading'          => 'Our Address',
+        'contact_text'             => "Got a craving, a question, or just want to share your foodie love? We're all ears!",
+        'contact_map_query'        => '47 Morton St, Clayton VIC 3168, Australia',
+        'contact_success'          => "Thank you! Your message has been sent — we'll get back to you as soon as we can.",
+        'contact_notify_enabled'   => '1',
+        'contact_notify_email'     => '',
+        'contact_meta_description' => "Get in touch with Chum Chum's Sri Lankan Cuisine Restaurant in Clayton, Melbourne — call, email, find us on the map or send us a message.",
     ];
 }
 
@@ -83,7 +94,7 @@ function get_navigation(): array
         ['label' => 'Home',       'url' => 'index.php'],
         ['label' => 'About Us',   'url' => '#about'],
         ['label' => 'Gallery',    'url' => '#gallery'],
-        ['label' => 'Contact Us', 'url' => '#contact'],
+        ['label' => 'Contact Us', 'url' => 'contact.php'],
     ];
 }
 
@@ -93,8 +104,21 @@ function get_footer_links(): array
         ['label' => 'Home',       'url' => 'index.php'],
         ['label' => 'Menu',       'url' => '#menu'],
         ['label' => 'Gallery',    'url' => '#gallery'],
-        ['label' => 'Contact us', 'url' => '#contact'],
+        ['label' => 'Contact us', 'url' => 'contact.php'],
     ];
+}
+
+/**
+ * Link for nav/footer items. "#section" links point at homepage sections, so on any
+ * other page they become "/#section" (back to the homepage, then jump).
+ */
+function nav_url(string $url): string
+{
+    $page = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
+    if ($url !== '' && $url[0] === '#' && $page !== 'index.php') {
+        return base_url('') . $url;
+    }
+    return link_url($url);
 }
 
 function get_menu_categories(): array

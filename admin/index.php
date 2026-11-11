@@ -21,6 +21,12 @@ $homeCards = [
     ['home.php?section=reservation', 'Reservation',     'Booking heading, text and photo.', null],
     ['testimonials.php',             'Testimonials',    'Guest reviews in the yellow slider.', count_rows($pdo, 'SELECT COUNT(*) FROM testimonials WHERE is_active = 1') . ' shown'],
 ];
+$unreadMsgs   = unread_message_count();
+$contactCards = [
+    ['messages.php',     'Messages',     'Everything sent through the website contact form.',
+        $unreadMsgs ? $unreadMsgs . ' new' : count_rows($pdo, 'SELECT COUNT(*) FROM contact_messages') . ' total'],
+    ['contact-page.php', 'Page Content', 'Title, intro, banner photo, map and email notifications.', null],
+];
 $cards = [
     ['settings.php', 'Site Settings',   'Phone, email, address, links, footer, SEO and maintenance mode.', null],
     ['account.php',  'Account & Users', 'Change your password and manage admin users.', null],
@@ -37,6 +43,17 @@ admin_page_start('Dashboard', 'index');
         <h2><?= e($title) ?></h2>
         <p><?= e($text) ?></p>
         <?php if ($meta !== null): ?><span class="badge"><?= e($meta) ?></span><?php endif; ?>
+      </a>
+    <?php endforeach; ?>
+  </div>
+
+  <h2 class="section-title">Contact Page</h2>
+  <div class="cards">
+    <?php foreach ($contactCards as [$href, $title, $text, $meta]): ?>
+      <a class="card card--link" href="<?= e($href) ?>">
+        <h2><?= e($title) ?></h2>
+        <p><?= e($text) ?></p>
+        <?php if ($meta !== null): ?><span class="badge<?= $href === 'messages.php' && $unreadMsgs ? ' badge--warn' : '' ?>"><?= e($meta) ?></span><?php endif; ?>
       </a>
     <?php endforeach; ?>
   </div>

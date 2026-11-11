@@ -84,6 +84,40 @@
     });
   }
 
+  /* ---------- Contact form ---------- */
+  var cform = document.querySelector('[data-contact-form]');
+  if (cform) {
+    cform.addEventListener('submit', function (e) {
+      // Friendly check before sending (the server checks everything again)
+      var firstBad = null;
+      cform.querySelectorAll('[required]').forEach(function (field) {
+        var bad = !field.value.trim() || (field.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value.trim()));
+        field.closest('.cform__field').classList.toggle('has-error', bad);
+        field.setAttribute('aria-invalid', bad ? 'true' : 'false');
+        if (bad && !firstBad) firstBad = field;
+      });
+      if (firstBad) { e.preventDefault(); firstBad.focus(); return; }
+      var btn = cform.querySelector('.cform__submit');
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'Sending…';
+    });
+    window.addEventListener('pageshow', function () { // re-enable after using the Back button
+      var btn = cform.querySelector('.cform__submit');
+      btn.disabled = false;
+      btn.querySelector('span').textContent = 'Send Message';
+    });
+    cform.addEventListener('input', function (e) {
+      var f = e.target.closest('.cform__field');
+      if (f && f.classList.contains('has-error') && e.target.value.trim()) f.classList.remove('has-error');
+    });
+  }
+  var sentBox = document.getElementById('contact-sent');
+  if (sentBox) {
+    // after load: the browser's jump to #contact-form would otherwise reset focus
+    var focusSent = function () { setTimeout(function () { sentBox.focus({ preventScroll: true }); }, 50); };
+    if (document.readyState === 'complete') focusSent(); else window.addEventListener('load', focusSent);
+  }
+
   /* ---------- Hero dish slider ---------- */
   var hero = document.querySelector('.hero');
   var heroSlides = hero ? Array.prototype.slice.call(hero.querySelectorAll('.hero__slide')) : [];

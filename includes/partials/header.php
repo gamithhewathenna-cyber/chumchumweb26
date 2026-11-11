@@ -50,7 +50,7 @@ $current         = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
     <nav class="main-nav" aria-label="Main">
       <ul>
         <?php foreach ($nav as $item): ?>
-          <li><a href="<?= e(link_url($item['url'])) ?>"<?= ($item['url'] === $current) ? ' aria-current="page"' : '' ?>><?= e($item['label']) ?></a></li>
+          <li><a href="<?= e(nav_url($item['url'])) ?>"<?= ($item['url'] === $current) ? ' aria-current="page"' : '' ?>><?= e($item['label']) ?></a></li>
         <?php endforeach; ?>
       </ul>
     </nav>
@@ -73,14 +73,14 @@ $current         = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
     <nav aria-label="Mobile">
       <ul class="drawer__nav">
         <?php foreach ($nav as $item): ?>
-          <li><a href="<?= e(link_url($item['url'])) ?>" data-drawer-close><?= e($item['label']) ?></a></li>
+          <li><a href="<?= e(nav_url($item['url'])) ?>" data-drawer-close><?= e($item['label']) ?></a></li>
         <?php endforeach; ?>
       </ul>
     </nav>
     <p class="drawer__heading">Our Menu</p>
     <ul class="drawer__menu">
       <?php foreach (get_menu_categories() as $cat): ?>
-        <li><a href="<?= e(link_url($cat['link_url'])) ?>" data-drawer-close>
+        <li><a href="<?= e(nav_url($cat['link_url'])) ?>" data-drawer-close>
           <img src="<?= e(img_url($cat['thumbnail'])) ?>" alt="" loading="lazy"><?= e($cat['name']) ?>
         </a></li>
       <?php endforeach; ?>

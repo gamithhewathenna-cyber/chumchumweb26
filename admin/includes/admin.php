@@ -479,6 +479,7 @@ function admin_nav(): array
     return [
         'index'    => ['Dashboard',       'M3 12l9-8 9 8M5 10v10h5v-6h4v6h5V10'],
         'home'     => ['Home Page',       'M4 5h16v14H4zM4 9h16M8 13h8M8 16h5'],
+        'messages' => ['Contact Page',    'M4 6h16v12H4zM4 7l8 6 8-6'],
         'settings' => ['Site Settings',   'M4 6h16M4 12h16M4 18h10'],
         'account'  => ['Account & Users', 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0'],
     ];
@@ -506,6 +507,35 @@ function home_tabs(string $active): void
         echo '<a href="', e($url), '"', $key === $active ? ' aria-current="page"' : '', '>', e($label), '</a>';
     }
     echo '</nav>';
+}
+
+/** Contact Page tabs. */
+function contact_tabs(string $active): void
+{
+    $unread = unread_message_count();
+    $tabs = [
+        'messages' => ['Messages' . ($unread ? ' (' . $unread . ' new)' : ''), 'messages.php'],
+        'content'  => ['Page Content', 'contact-page.php'],
+    ];
+    echo '<nav class="tabs" aria-label="Contact page sections">';
+    foreach ($tabs as $key => [$label, $url]) {
+        echo '<a href="', e($url), '"', $key === $active ? ' aria-current="page"' : '', '>', e($label), '</a>';
+    }
+    echo '</nav>';
+}
+
+/** Unread contact-form messages (0 if the table doesn't exist yet). */
+function unread_message_count(): int
+{
+    static $n = null;
+    if ($n === null) {
+        try {
+            $n = (int) admin_db()->query('SELECT COUNT(*) FROM contact_messages WHERE is_read = 0')->fetchColumn();
+        } catch (Throwable $ex) {
+            $n = 0;
+        }
+    }
+    return $n;
 }
 
 function admin_page_start(string $title, string $active): void

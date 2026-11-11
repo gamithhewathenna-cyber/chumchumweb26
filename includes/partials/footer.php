@@ -13,7 +13,7 @@
       <h2>Link</h2>
       <ul>
         <?php foreach (get_footer_links() as $link): ?>
-          <li><a href="<?= e(link_url($link['url'])) ?>"><?= e($link['label']) ?></a></li>
+          <li><a href="<?= e(nav_url($link['url'])) ?>"><?= e($link['label']) ?></a></li>
         <?php endforeach; ?>
       </ul>
     </div>

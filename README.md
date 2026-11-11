@@ -21,6 +21,8 @@ No frameworks, no build step, no Composer — upload and run on any cPanel host.
 
 ```
 index.php                 Homepage
+contact.php               Contact page (address, map, message form)
+includes/contact.php      Contact form: validation, spam protection, saving, email notification
 admin/                    Admin panel (login, content editing, users)
 config/config.php         Database credentials & site options (web access blocked)
 includes/bootstrap.php    PDO connection + helpers
@@ -65,6 +67,7 @@ All homepage text is in the database, editable through the admin panel (or direc
 | `menu_categories` | The dish pills around the hero (`side` = left / right). Each one is also a **hero slide**: clicking the pill shows its `hero_title`, `hero_subtitle`, `hero_badge` and `hero_image` (empty fields fall back to the Hero defaults in `settings`). |
 | `opening_hours`   | Rows in the yellow Opening Hours card                            |
 | `showcase_items`  | The 7 grid tiles (slot 1 feature, 2/4/6 text, 3/5/7 images)      |
+| `contact_messages` | Messages sent through the Contact page form (read them in Admin → Contact Page → Messages) |
 | `testimonials`    | Slides in the yellow testimonial slider (`is_active` to hide)    |
 
 Image fields hold a file name inside `assets/img/` (or a full URL).

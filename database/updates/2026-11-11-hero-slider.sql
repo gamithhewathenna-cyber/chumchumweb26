@@ -5,6 +5,8 @@
 -- columns are only added if missing, and only EMPTY slide fields are filled.
 -- ==============================================================
 
+SET NAMES utf8mb4;
+
 -- 1. Add the four slide columns (only if they don't exist yet)
 SET @add_cols = (
   SELECT IF(COUNT(*) = 0,

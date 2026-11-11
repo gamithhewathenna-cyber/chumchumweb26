@@ -47,7 +47,17 @@ INSERT INTO `settings` (`setting_key`, `setting_value`) VALUES
 ('copyright_name',    'Chumchums'),
 ('maintenance_mode',    '0'),
 ('maintenance_title',   'We''ll Be Back Soon'),
-('maintenance_message', 'Our website is getting a fresh new look. We''re still serving delicious Sri Lankan food — give us a call or drop us an email in the meantime.');
+('maintenance_message', 'Our website is getting a fresh new look. We''re still serving delicious Sri Lankan food — give us a call or drop us an email in the meantime.'),
+('contact_title',            'Contact Us'),
+('contact_intro',            'Lorem Ipsum Dolor Sit Amet Consectetur. Adipiscing Potenti Sit Risus Mattis Placerat Risus. Gravida Ac Duis Sed Placerat. Vel Dictumst In Cras Viverra Pretium Massa.'),
+('contact_banner',           'contact-banner.jpg'),
+('contact_heading',          'Our Address'),
+('contact_text',             'Got a craving, a question, or just want to share your foodie love? We''re all ears!'),
+('contact_map_query',        '47 Morton St, Clayton VIC 3168, Australia'),
+('contact_success',          'Thank you! Your message has been sent — we''ll get back to you as soon as we can.'),
+('contact_notify_enabled',   '1'),
+('contact_notify_email',     ''),
+('contact_meta_description', 'Get in touch with Chum Chum''s Sri Lankan Cuisine Restaurant in Clayton, Melbourne — call, email, find us on the map or send us a message.');
 
 -- ---------- Hero menu categories ----------
 DROP TABLE IF EXISTS `menu_categories`;
@@ -132,6 +142,24 @@ INSERT INTO `testimonials` (`title`, `content`, `sort_order`) VALUES
 ('Lorem Ipsum Dolor Sit Amet', 'Lorem Ipsum Dolor Sit Amet Consectetur. Amet Dolor Quis Id Maecenas Ipsum Nullam Posuere Vitae. Volutpat Tristique Ut Hendrerit Integer Sollicitudin Nibh Pharetra Sagittis. Tellus Vestibulum Ac Nisl Quis Nec Tincidunt. Nam Ultricies Feugiat Enim Cras. Sed Odio Mattis Venenatis Luctus Cum. At Facilisi Leo Etiam Tellus. Tincidunt Id.', 1),
 ('Lorem Ipsum Dolor Sit Amet', 'Lorem Ipsum Dolor Sit Amet Consectetur. Amet Dolor Quis Id Maecenas Ipsum Nullam Posuere Vitae. Volutpat Tristique Ut Hendrerit Integer Sollicitudin Nibh Pharetra Sagittis. Tellus Vestibulum Ac Nisl Quis Nec Tincidunt. Nam Ultricies Feugiat Enim Cras. Sed Odio Mattis Venenatis Luctus Cum. At Facilisi Leo Etiam Tellus. Tincidunt Id.', 2),
 ('Lorem Ipsum Dolor Sit Amet', 'Lorem Ipsum Dolor Sit Amet Consectetur. Amet Dolor Quis Id Maecenas Ipsum Nullam Posuere Vitae. Volutpat Tristique Ut Hendrerit Integer Sollicitudin Nibh Pharetra Sagittis. Tellus Vestibulum Ac Nisl Quis Nec Tincidunt. Nam Ultricies Feugiat Enim Cras. Sed Odio Mattis Venenatis Luctus Cum. At Facilisi Leo Etiam Tellus. Tincidunt Id.', 3);
+
+-- ---------- Contact form messages ----------
+-- Not dropped on re-import, so messages survive a content reset.
+CREATE TABLE IF NOT EXISTS `contact_messages` (
+  `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `first_name` VARCHAR(60)  NOT NULL,
+  `last_name`  VARCHAR(60)  NOT NULL DEFAULT '',
+  `phone`      VARCHAR(30)  NOT NULL DEFAULT '',
+  `email`      VARCHAR(150) NOT NULL,
+  `message`    TEXT         NOT NULL,
+  `ip`         VARCHAR(45)  NOT NULL DEFAULT '',
+  `user_agent` VARCHAR(255) NOT NULL DEFAULT '',
+  `is_read`    TINYINT(1)   NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_read_created` (`is_read`, `created_at`),
+  KEY `idx_ip_created` (`ip`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------- Admin panel ----------
 -- Not dropped on re-import, so admin logins survive a content reset.
