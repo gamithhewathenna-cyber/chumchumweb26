@@ -105,7 +105,7 @@ home_tabs('showcase');
     <?php foreach ($items as $n => $item): $type = slot_type((int) $n); ?>
       <a class="showcase-map__tile showcase-map__tile--<?= e($type) ?> showcase-map__tile--s<?= (int) $n ?>" href="#tile-<?= (int) $n ?>">
         <?php if ($type !== 'text' && $item['image']): ?>
-          <img src="<?= e(img_url($item['image'])) ?>" alt="">
+          <img src="<?= e(img_url($item['image'])) ?>" alt="" loading="lazy" decoding="async">
           <span class="showcase-map__change">Change photo</span>
         <?php endif; ?>
         <span class="showcase-map__body">

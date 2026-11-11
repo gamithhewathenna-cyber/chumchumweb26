@@ -201,9 +201,26 @@
     var heroTimer = null;
     var HERO_DELAY = 5000;
 
+    // Lazy dish photos: only the first slide's photo is in the HTML; the rest load here
+    function loadSlideImage(slide) {
+      var img = slide && slide.querySelector('img[data-src]');
+      if (img) { img.src = img.getAttribute('data-src'); img.removeAttribute('data-src'); }
+    }
+    function loadAllSlideImages() { heroSlides.forEach(loadSlideImage); }
+    // after the page has finished loading (and the browser is idle), fetch the other dishes quietly
+    window.addEventListener('load', function () {
+      if ('requestIdleCallback' in window) requestIdleCallback(loadAllSlideImages, { timeout: 2500 });
+      else setTimeout(loadAllSlideImages, 1200);
+    });
+    // a visitor pointing at / touching the pills is about to switch — load now
+    hero.addEventListener('pointerenter', loadAllSlideImages, { once: true });
+    hero.addEventListener('touchstart', loadAllSlideImages, { once: true, passive: true });
+
     function showDish(i) {
       var next = (i + heroSlides.length) % heroSlides.length;
       if (next === heroIndex) return;
+      loadSlideImage(heroSlides[next]);
+      loadSlideImage(heroSlides[(next + 1) % heroSlides.length]); // and the one after, ready for autoplay
 
       // The outgoing plate whips away from the exact angle its slow spin had reached
       var leaving = heroSlides[heroIndex];

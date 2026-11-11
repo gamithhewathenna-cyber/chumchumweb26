@@ -358,7 +358,7 @@ function field_image(string $name, string $label, ?string $current, string $help
     $id   = $id !== '' ? $id : 'f_' . preg_replace('~[^a-z0-9_]+~i', '_', $name);
     $html = '<div class="field field--image"><label for="' . $id . '">' . e($label) . '</label><div class="image-picker">';
     $html .= '<div class="image-picker__preview">';
-    $html .= $current ? '<img src="' . e(img_url($current)) . '" alt="">' : '<span>No image</span>';
+    $html .= $current ? '<img src="' . e(img_url($current)) . '" alt="" loading="lazy" decoding="async">' : '<span>No image</span>';
     $html .= '</div><div class="image-picker__input">';
     $html .= '<input id="' . $id . '" type="file" name="' . e($name) . '" accept="image/jpeg,image/png,image/webp,image/gif">';
     $html .= '<p class="help">' . ($current ? 'Choose a new file to replace the current image. ' : '') . 'JPG, PNG, WebP or GIF, max 5 MB.'

@@ -119,7 +119,7 @@ if ($sameAs) {
   <div class="drawer__backdrop" data-drawer-close></div>
   <aside class="drawer__panel" role="dialog" aria-modal="true" aria-label="Navigation">
     <button class="drawer__close" type="button" data-drawer-close aria-label="Close navigation">&times;</button>
-    <img class="drawer__logo" src="<?= e(asset('img/logo.png')) ?>" alt="" width="204" height="159">
+    <img class="drawer__logo" src="<?= e(asset('img/logo.png')) ?>" alt="" width="204" height="159" loading="lazy" decoding="async">
     <nav aria-label="Mobile">
       <ul class="drawer__nav">
         <?php foreach ($nav as $item): ?>

@@ -41,7 +41,7 @@ require __DIR__ . '/includes/partials/header.php';
     <?php else: ?>
       <div class="menu-embed" data-reveal>
         <!-- The pasted menu runs in a sealed (sandboxed) frame: its scripts work, but it can't touch the site -->
-        <iframe class="menu-frame" title="<?= e($s['menu_title']) ?>" sandbox="<?= MENU_SANDBOX ?>"
+        <iframe class="menu-frame" title="<?= e($s['menu_title']) ?>" sandbox="<?= MENU_SANDBOX ?>" loading="lazy"
                 srcdoc="<?= e(menu_document($code)) ?>"></iframe>
       </div>
     <?php endif; ?>

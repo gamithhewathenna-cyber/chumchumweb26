@@ -187,10 +187,10 @@ home_tabs('categories');
         <tbody>
         <?php foreach ($rows as $r): ?>
           <tr>
-            <td><img class="thumb" src="<?= e(img_url($r['thumbnail'])) ?>" alt=""></td>
+            <td><img class="thumb" src="<?= e(img_url($r['thumbnail'])) ?>" alt="" loading="lazy" decoding="async"></td>
             <td><strong><?= e($r['name']) ?></strong><?php if ($r['hero_title'] !== ''): ?><br><span class="muted small"><?= e($r['hero_title']) ?></span><?php endif; ?></td>
             <td><?= $r['hero_image'] !== ''
-                ? '<img class="thumb thumb--slide" src="' . e(img_url($r['hero_image'])) . '" alt="">'
+                ? '<img class="thumb thumb--slide" src="' . e(img_url($r['hero_image'])) . '" alt="" loading="lazy" decoding="async">'
                 : '<span class="badge badge--warn">No photo</span>' ?></td>
             <td><?= e(ucfirst($r['side'])) ?></td>
             <td><?= (int) $r['sort_order'] ?></td>

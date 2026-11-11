@@ -65,7 +65,8 @@ function category_pill(array $cat, int $index, bool $active, int $order = 0): st
           <div class="hero__dish">
             <span class="hero__steam" aria-hidden="true"><i></i><i></i><i></i></span>
             <span class="hero__plate">
-              <img src="<?= e(img_url($slide['image'])) ?>" alt="<?= e(trim($slide['title'] . ' ' . $slide['subtitle'])) ?>"
+              <?php /* Only the first dish downloads straight away; the others wait (data-src) until main.js loads them */ ?>
+              <img <?= $active ? 'src' : 'data-src' ?>="<?= e(img_url($slide['image'])) ?>" alt="<?= e(trim($slide['title'] . ' ' . $slide['subtitle'])) ?>"
                    width="1200" height="1200"<?= $active ? ' fetchpriority="high"' : ' decoding="async"' ?>>
             </span>
           </div>
