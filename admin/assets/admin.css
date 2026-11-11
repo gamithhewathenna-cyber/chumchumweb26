@@ -331,3 +331,21 @@ body.auth { min-height: 100vh; display: grid; place-items: center; padding: 24px
 .check-inline { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; white-space: nowrap; cursor: pointer; }
 .check-inline input { width: 16px; height: 16px; accent-color: var(--gold-dark); }
 .photo-card__actions { display: flex; flex-wrap: wrap; gap: 5px; padding-top: 8px; border-top: 1px solid var(--line); }
+
+/* ---------- Home → Showcase Grid: editable tile cards ---------- */
+.showcase-map { margin-bottom: 24px; }
+.showcase-map__change {
+  position: absolute; top: 10px; right: 10px; z-index: 1; padding: 4px 10px; border-radius: 999px;
+  background: var(--gold); color: #111; font-size: 12px; font-weight: 700; opacity: 0; transition: opacity .2s;
+}
+.showcase-map__tile:hover .showcase-map__change, .showcase-map__tile:focus-visible .showcase-map__change { opacity: 1; }
+.tile-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 16px; }
+@media (max-width: 560px) { .tile-cards { grid-template-columns: 1fr; } }
+.tile-card { margin: 0; scroll-margin-top: 20px; }
+.tile-card:target { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(231, 175, 39, .25); }
+.tile-card .panel__title { display: flex; align-items: center; gap: 10px; }
+.tile-card input[type="file"]::file-selector-button {
+  margin-right: 10px; padding: 7px 14px; border: 0; border-radius: 999px;
+  background: var(--gold); color: #111; font: inherit; font-weight: 700; cursor: pointer;
+}
+.tile-card input[type="file"]::file-selector-button:hover { background: #f0bb35; }

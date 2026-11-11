@@ -52,8 +52,8 @@ if (is_post()) {
                        ON DUPLICATE KEY UPDATE title = VALUES(title), description = VALUES(description),
                                                image = VALUES(image), link_url = VALUES(link_url)')
             ->execute([$slot, mb_substr($item['title'], 0, 150), (string) $item['description'], (string) $item['image'], (string) $item['link_url']]);
-        flash('success', 'Tile ' . $slot . ' saved.');
-        redirect('showcase.php');
+        flash('success', 'Tile ' . $slot . ' saved' . (isset($uploaded) && $uploaded !== null ? ' with the new photo' : '') . '.');
+        redirect('showcase.php#tile-' . $slot);
     } catch (RuntimeException $ex) {
         flash('error', $ex->getMessage());
         $items[$slot] = $item;
@@ -95,22 +95,46 @@ if ($slot >= 1 && $slot <= 7) {
     exit;
 }
 
-/* ---------- Overview (mirrors the website grid) ---------- */
+/* ---------- Overview: map of the grid + an editable card for every tile ---------- */
+$sizes = [1 => 'Portrait, about 811 × 934 px.', 3 => 'About 535 × 467 px.', 5 => 'About 535 × 467 px.', 7 => 'About 535 × 467 px.'];
 admin_page_start('Home Page', 'home');
 home_tabs('showcase');
 ?>
-  <p class="muted">The seven tiles below the About section, laid out as they appear on the website. Click a tile to edit it.</p>
-  <div class="showcase-map">
+  <p class="muted">The seven tiles below the About section on the home page. Tiles 1, 3, 5 and 7 are <strong>photos</strong> — use <strong>Change photo</strong> on their cards below. Tiles 2, 4 and 6 are text cards.</p>
+  <div class="showcase-map" aria-label="Layout of the grid on the website">
     <?php foreach ($items as $n => $item): $type = slot_type((int) $n); ?>
-      <a class="showcase-map__tile showcase-map__tile--<?= e($type) ?> showcase-map__tile--s<?= (int) $n ?>" href="showcase.php?slot=<?= (int) $n ?>">
+      <a class="showcase-map__tile showcase-map__tile--<?= e($type) ?> showcase-map__tile--s<?= (int) $n ?>" href="#tile-<?= (int) $n ?>">
         <?php if ($type !== 'text' && $item['image']): ?>
           <img src="<?= e(img_url($item['image'])) ?>" alt="">
+          <span class="showcase-map__change">Change photo</span>
         <?php endif; ?>
         <span class="showcase-map__body">
           <span class="showcase-map__num"><?= (int) $n ?> · <?= e($typeLabels[$type]) ?></span>
           <strong><?= e($item['title']) ?></strong>
         </span>
       </a>
+    <?php endforeach; ?>
+  </div>
+
+  <div class="tile-cards">
+    <?php foreach ($items as $n => $item): $n = (int) $n; $type = slot_type($n); ?>
+      <form method="post" enctype="multipart/form-data" class="panel tile-card tile-card--<?= e($type) ?>" id="tile-<?= $n ?>">
+        <?= csrf_field() ?>
+        <input type="hidden" name="slot" value="<?= $n ?>">
+        <h2 class="panel__title">Tile <?= $n ?> <span class="badge"><?= e($typeLabels[$type]) ?></span></h2>
+        <?php if ($type !== 'text'): ?>
+          <?= field_image('image', 'Photo', $item['image'], $sizes[$n] ?? '', 't' . $n . '-image') ?>
+        <?php endif; ?>
+        <?php if ($type === 'image'): ?>
+          <?= field_text('title', 'Photo description', $item['title'], ['id' => 't' . $n . '-title', 'required' => true, 'maxlength' => 150,
+              'help' => 'Not shown on the page — read out by screen readers and used by Google.']) ?>
+        <?php else: ?>
+          <?= field_text('title', 'Title', $item['title'], ['id' => 't' . $n . '-title', 'required' => true, 'maxlength' => 150]) ?>
+          <?= field_text('description', 'Text', $item['description'], ['id' => 't' . $n . '-text', 'type' => 'textarea', 'rows' => 3]) ?>
+          <?= field_text('link_url', '"Discover More" button link', $item['link_url'], ['id' => 't' . $n . '-link', 'maxlength' => 255]) ?>
+        <?php endif; ?>
+        <div class="actions"><button class="btn btn--primary" type="submit">Save tile <?= $n ?></button></div>
+      </form>
     <?php endforeach; ?>
   </div>
 <?php admin_page_end();

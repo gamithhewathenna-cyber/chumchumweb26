@@ -331,7 +331,7 @@ function handle_upload(string $field, string $folder = 'uploads'): ?string
 function field_text(string $name, string $label, $value, array $o = []): string
 {
     $type  = $o['type'] ?? 'text';
-    $id    = 'f_' . preg_replace('~[^a-z0-9_]+~i', '_', $name);
+    $id    = $o['id'] ?? 'f_' . preg_replace('~[^a-z0-9_]+~i', '_', $name);
     $attrs = '';
     foreach (['maxlength', 'min', 'max', 'step', 'placeholder', 'autocomplete'] as $a) {
         if (isset($o[$a])) {
@@ -353,9 +353,9 @@ function field_text(string $name, string $label, $value, array $o = []): string
     return $html . '</div>';
 }
 
-function field_image(string $name, string $label, ?string $current, string $help = ''): string
+function field_image(string $name, string $label, ?string $current, string $help = '', string $id = ''): string
 {
-    $id   = 'f_' . preg_replace('~[^a-z0-9_]+~i', '_', $name);
+    $id   = $id !== '' ? $id : 'f_' . preg_replace('~[^a-z0-9_]+~i', '_', $name);
     $html = '<div class="field field--image"><label for="' . $id . '">' . e($label) . '</label><div class="image-picker">';
     $html .= '<div class="image-picker__preview">';
     $html .= $current ? '<img src="' . e(img_url($current)) . '" alt="">' : '<span>No image</span>';
