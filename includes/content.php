@@ -57,7 +57,7 @@ function default_settings(): array
         // Menu page (the menu itself is pasted as HTML + CSS in Admin → Menu Page)
         'menu_title'            => 'Menu',
         'menu_intro'            => 'Explore Our Menu Of Modern Sri Lankan Favourites And Fusion Dishes — From Kottu And Rice & Curry To Biryani And Fresh Seafood, Made Fresh Every Day.',
-        'menu_banner'           => '',
+        'menu_banner'           => 'menu-banner.jpg',
         'menu_html'             => '',
         'menu_css'              => '',
         'menu_empty_text'       => "Our full menu is coming soon. In the meantime, give us a call and we'll happily tell you what's cooking today.",
