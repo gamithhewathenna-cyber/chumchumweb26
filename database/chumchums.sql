@@ -11,7 +11,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
   `setting_key`   VARCHAR(64)  NOT NULL,
-  `setting_value` TEXT         NOT NULL,
+  `setting_value` MEDIUMTEXT   NOT NULL,
   `updated_at`    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`setting_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -63,6 +63,13 @@ INSERT INTO `settings` (`setting_key`, `setting_value`) VALUES
 ('aboutpage_why_text',            'Lorem Ipsum Dolor Sit Amet Consectetur. Adipiscing Potenti Sit Risus Mattis Placerat Risus. Gravida Ac Duis Sed Placerat.'),
 ('aboutpage_show_reservation',    '1'),
 ('aboutpage_meta_description',    'Chum Chum''s brings the vibrant flavours of Sri Lankan cuisine to Clayton, Melbourne — traditional favourites and modern fusion dishes, made fresh with bold spices.'),
+('menu_title',              'Menu'),
+('menu_intro',              'Explore Our Menu Of Modern Sri Lankan Favourites And Fusion Dishes — From Kottu And Rice & Curry To Biryani And Fresh Seafood, Made Fresh Every Day.'),
+('menu_banner',             ''),
+('menu_html',               ''),
+('menu_css',                ''),
+('menu_empty_text',         'Our full menu is coming soon. In the meantime, give us a call and we''ll happily tell you what''s cooking today.'),
+('menu_meta_description',   'See the menu at Chum Chum''s Sri Lankan Cuisine Restaurant in Clayton, Melbourne — kottu, rice & curry, biryani, seafood and modern fusion dishes.'),
 ('contact_title',            'Contact Us'),
 ('contact_intro',            'Lorem Ipsum Dolor Sit Amet Consectetur. Adipiscing Potenti Sit Risus Mattis Placerat Risus. Gravida Ac Duis Sed Placerat. Vel Dictumst In Cras Viverra Pretium Massa.'),
 ('contact_banner',           'contact-banner.jpg'),

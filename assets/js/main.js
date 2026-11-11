@@ -84,6 +84,14 @@
     });
   }
 
+  /* ---------- Menu page: support older browsers without declarative Shadow DOM ---------- */
+  document.querySelectorAll('template[shadowrootmode]').forEach(function (tpl) {
+    var host = tpl.parentNode;
+    if (!host || host.shadowRoot || !host.attachShadow) return;
+    host.attachShadow({ mode: tpl.getAttribute('shadowrootmode') || 'open' }).appendChild(tpl.content);
+    tpl.remove();
+  });
+
   /* ---------- Contact form ---------- */
   var cform = document.querySelector('[data-contact-form]');
   if (cform) {

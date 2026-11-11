@@ -712,6 +712,23 @@ body.drawer-open { overflow: hidden; }
 }
 
 /* ==========================================================================
+   Menu page — the menu itself is pasted HTML/CSS shown inside .menu-embed
+   ========================================================================== */
+.menu-body { padding: 56px 20px 40px; }
+.menu-embed { display: block; min-height: 120px; }
+.menu-empty {
+  display: grid; justify-items: center; gap: 22px; max-width: 620px; margin: 0 auto; padding: 40px 28px;
+  text-align: center; border: 1px solid rgba(231, 175, 39, .5); border-radius: 34px; background: #121212;
+}
+.menu-empty p { color: var(--text-soft); font-size: 17px; line-height: 1.5; }
+.menu-empty .reservation__phone { width: min(317px, 100%); }
+@media (min-width: 768px) { .menu-body { padding: 80px 40px 64px; } }
+@media (min-width: 1200px) {
+  .menu-body { padding: calc(100 * var(--u)) calc(106 * var(--u)) calc(120 * var(--u)); }
+  .menu-empty .reservation__phone { height: calc(60 * var(--u)); font-size: calc(36 * var(--u)); }
+}
+
+/* ==========================================================================
    About page
    ========================================================================== */
 /* Intro: text beside the fork photo */

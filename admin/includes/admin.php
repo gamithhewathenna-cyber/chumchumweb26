@@ -285,7 +285,7 @@ function take_flashes(): array
  * Returns the stored path (e.g. "uploads/20261110-ab12cd34ef56.jpg"),
  * null when no file was chosen, or throws RuntimeException on a bad file.
  */
-function handle_upload(string $field): ?string
+function handle_upload(string $field, string $folder = 'uploads'): ?string
 {
     if (empty($_FILES[$field]) || !is_array($_FILES[$field]) || is_array($_FILES[$field]['error'])) {
         return null;
@@ -307,16 +307,21 @@ function handle_upload(string $field): ?string
         throw new RuntimeException('Please upload a JPG, PNG, WebP or GIF image.');
     }
 
-    $dir = APP_ROOT . '/assets/img/uploads';
+    $folder = preg_replace('~[^a-z0-9_-]~i', '', $folder) ?: 'uploads';
+    $dir = APP_ROOT . '/assets/img/' . $folder;
     if (!is_dir($dir) && !@mkdir($dir, 0755, true)) {
-        throw new RuntimeException('The uploads folder (assets/img/uploads) could not be created. Check folder permissions.');
+        throw new RuntimeException("The folder assets/img/{$folder} could not be created. Check folder permissions.");
+    }
+    // Every upload folder gets the "never run scripts here" rules
+    if (!is_file($dir . '/.htaccess') && is_file(APP_ROOT . '/assets/img/uploads/.htaccess')) {
+        @copy(APP_ROOT . '/assets/img/uploads/.htaccess', $dir . '/.htaccess');
     }
     $name = date('Ymd') . '-' . bin2hex(random_bytes(6)) . '.' . $types[$info[2]];
     if (!move_uploaded_file($f['tmp_name'], $dir . '/' . $name)) {
-        throw new RuntimeException('The image could not be saved. Check that assets/img/uploads is writable.');
+        throw new RuntimeException("The image could not be saved. Check that assets/img/{$folder} is writable.");
     }
     @chmod($dir . '/' . $name, 0644);
-    return 'uploads/' . $name;
+    return $folder . '/' . $name;
 }
 
 /* ------------------------------------------------------------------ */
@@ -480,6 +485,7 @@ function admin_nav(): array
         'index'    => ['Dashboard',       'M3 12l9-8 9 8M5 10v10h5v-6h4v6h5V10'],
         'home'     => ['Home Page',       'M4 5h16v14H4zM4 9h16M8 13h8M8 16h5'],
         'about-page' => ['About Page',    'M12 8h.01M11 12h1v5h1M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z'],
+        'menu-page' => ['Menu Page',      'M7 3v8m-2-8v4a2 2 0 0 0 4 0V3M7 11v10M16 3c-2 1-3 4-3 7h3v11'],
         'messages' => ['Contact Page',    'M4 6h16v12H4zM4 7l8 6 8-6'],
         'settings' => ['Site Settings',   'M4 6h16M4 12h16M4 18h10'],
         'account'  => ['Account & Users', 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0'],
@@ -551,6 +557,30 @@ function ensure_about_features_table(PDO $pdo): void
     $st = $pdo->prepare('INSERT INTO about_features (title, text, sort_order) VALUES (?, ?, ?)');
     foreach ($defaults as $i => $f) {
         $st->execute([$f['title'], $f['text'], $i + 1]);
+    }
+}
+
+/** Menu Page tabs. */
+function menu_tabs(string $active): void
+{
+    $tabs = [
+        'code'   => ['Menu HTML & CSS',   'menu-page.php'],
+        'images' => ['Menu Images',       'menu-page.php?tab=images'],
+        'page'   => ['Title, Banner & SEO', 'menu-page.php?tab=page'],
+    ];
+    echo '<nav class="tabs" aria-label="Menu page sections">';
+    foreach ($tabs as $key => [$label, $url]) {
+        echo '<a href="', e($url), '"', $key === $active ? ' aria-current="page"' : '', '>', e($label), '</a>';
+    }
+    echo '</nav>';
+}
+
+/** settings.setting_value was TEXT (64 KB) — a pasted menu needs more room. Upgrade once to MEDIUMTEXT (16 MB). */
+function ensure_settings_mediumtext(PDO $pdo): void
+{
+    $col = $pdo->query("SHOW COLUMNS FROM `settings` LIKE 'setting_value'")->fetch();
+    if ($col && stripos((string) $col['Type'], 'mediumtext') === false && stripos((string) $col['Type'], 'longtext') === false) {
+        $pdo->exec('ALTER TABLE `settings` MODIFY `setting_value` MEDIUMTEXT NOT NULL');
     }
 }
 

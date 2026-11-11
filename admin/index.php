@@ -27,6 +27,11 @@ $aboutCards = [
     ['about-page.php?section=story',  'Our Story',      'Story text and background photo.', null],
     ['about-features.php',           'Why Choose Us',  'Heading and the feature cards.', null],
 ];
+$menuCards = [
+    ['menu-page.php',            'Menu HTML & CSS',     'Paste your menu, preview it live, restore the previous version.', null],
+    ['menu-page.php?tab=images', 'Menu Images',         'Upload photos for the menu and copy their address.', null],
+    ['menu-page.php?tab=page',   'Title, Banner & SEO', 'Page heading, intro text and banner photo.', null],
+];
 $unreadMsgs   = unread_message_count();
 $contactCards = [
     ['messages.php',     'Messages',     'Everything sent through the website contact form.',
@@ -56,6 +61,16 @@ admin_page_start('Dashboard', 'index');
   <h2 class="section-title">About Page</h2>
   <div class="cards">
     <?php foreach ($aboutCards as [$href, $title, $text, $meta]): ?>
+      <a class="card card--link" href="<?= e($href) ?>">
+        <h2><?= e($title) ?></h2>
+        <p><?= e($text) ?></p>
+      </a>
+    <?php endforeach; ?>
+  </div>
+
+  <h2 class="section-title">Menu Page</h2>
+  <div class="cards">
+    <?php foreach ($menuCards as [$href, $title, $text, $meta]): ?>
       <a class="card card--link" href="<?= e($href) ?>">
         <h2><?= e($title) ?></h2>
         <p><?= e($text) ?></p>

@@ -54,6 +54,14 @@ function default_settings(): array
         'aboutpage_why_text'         => 'Lorem Ipsum Dolor Sit Amet Consectetur. Adipiscing Potenti Sit Risus Mattis Placerat Risus. Gravida Ac Duis Sed Placerat.',
         'aboutpage_show_reservation' => '1',
         'aboutpage_meta_description' => "Chum Chum's brings the vibrant flavours of Sri Lankan cuisine to Clayton, Melbourne — traditional favourites and modern fusion dishes, made fresh with bold spices.",
+        // Menu page (the menu itself is pasted as HTML + CSS in Admin → Menu Page)
+        'menu_title'            => 'Menu',
+        'menu_intro'            => 'Explore Our Menu Of Modern Sri Lankan Favourites And Fusion Dishes — From Kottu And Rice & Curry To Biryani And Fresh Seafood, Made Fresh Every Day.',
+        'menu_banner'           => '',
+        'menu_html'             => '',
+        'menu_css'              => '',
+        'menu_empty_text'       => "Our full menu is coming soon. In the meantime, give us a call and we'll happily tell you what's cooking today.",
+        'menu_meta_description' => "See the menu at Chum Chum's Sri Lankan Cuisine Restaurant in Clayton, Melbourne — kottu, rice & curry, biryani, seafood and modern fusion dishes.",
         // Contact page
         'contact_title'            => 'Contact Us',
         'contact_intro'            => 'Lorem Ipsum Dolor Sit Amet Consectetur. Adipiscing Potenti Sit Risus Mattis Placerat Risus. Gravida Ac Duis Sed Placerat. Vel Dictumst In Cras Viverra Pretium Massa.',
@@ -109,6 +117,7 @@ function get_navigation(): array
     return [
         ['label' => 'Home',       'url' => 'index.php'],
         ['label' => 'About Us',   'url' => 'about.php'],
+        ['label' => 'Menu',       'url' => 'menu.php'],
         ['label' => 'Gallery',    'url' => '#gallery'],
         ['label' => 'Contact Us', 'url' => 'contact.php'],
     ];
@@ -118,7 +127,7 @@ function get_footer_links(): array
 {
     return [
         ['label' => 'Home',       'url' => 'index.php'],
-        ['label' => 'Menu',       'url' => '#menu'],
+        ['label' => 'Menu',       'url' => 'menu.php'],
         ['label' => 'Gallery',    'url' => '#gallery'],
         ['label' => 'Contact us', 'url' => 'contact.php'],
     ];

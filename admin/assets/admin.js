@@ -58,3 +58,123 @@
     if (dirty) { e.preventDefault(); e.returnValue = ''; }
   });
 })();
+
+/* Chum Chum's — Menu Page code editor, live preview and copy buttons */
+(function () {
+  'use strict';
+
+  /* ---------- Copy buttons (Menu Images) ---------- */
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-copy]');
+    if (!btn) return;
+    var text = btn.getAttribute('data-copy');
+    var done = function () {
+      var old = btn.textContent;
+      btn.textContent = 'Copied ✓';
+      setTimeout(function () { btn.textContent = old; }, 1500);
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done);
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch (err) {}
+      ta.remove();
+    }
+  });
+
+  var form = document.getElementById('menu-code-form');
+  if (!form) return;
+  var htmlBox = form.querySelector('#menu_html');
+  var cssBox = form.querySelector('#menu_css');
+  var frame = form.querySelector('.preview__frame');
+  var fontUrl = form.getAttribute('data-font');
+  var dirty = false;
+
+  /* ---------- Editor behaviour: Tab indents, Shift+Tab outdents, Ctrl/Cmd+S saves ---------- */
+  [htmlBox, cssBox].forEach(function (box) {
+    box.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab' || e.ctrlKey || e.metaKey || e.altKey) return;
+      e.preventDefault();
+      var s = box.selectionStart, end = box.selectionEnd;
+      if (e.shiftKey) {
+        var lineStart = box.value.lastIndexOf('\n', s - 1) + 1;
+        if (box.value.substr(lineStart, 2) === '  ') {
+          box.value = box.value.slice(0, lineStart) + box.value.slice(lineStart + 2);
+          box.selectionStart = box.selectionEnd = Math.max(lineStart, s - 2);
+        }
+      } else {
+        box.value = box.value.slice(0, s) + '  ' + box.value.slice(end);
+        box.selectionStart = box.selectionEnd = s + 2;
+      }
+      box.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  });
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); dirty = false; form.submit(); }
+  });
+
+  /* ---------- Size counters ---------- */
+  function count(box) {
+    var el = form.querySelector('[data-count-for="' + box.id + '"]');
+    var lines = box.value ? box.value.split('\n').length : 0;
+    var kb = new Blob([box.value]).size / 1024;
+    el.textContent = lines + ' lines · ' + (kb < 10 ? kb.toFixed(1) : Math.round(kb)) + ' KB';
+    el.classList.toggle('is-big', kb > 1800);
+  }
+
+  /* ---------- Live preview (approximates the website: dark background, site font) ---------- */
+  function render() {
+    var css = cssBox.value.replace(/<\/style/gi, '<\\/style');
+    var html = htmlBox.value.replace(/<script\b[\s\S]*?<\/script\s*>/gi, '');
+    frame.srcdoc = '<!doctype html><html><head><meta charset="utf-8"><base target="_blank">'
+      + '<style>@font-face{font-family:"DM Sans";src:url("' + fontUrl + '") format("woff2");font-weight:100 1000;}'
+      + 'html,body{margin:0}body{padding:28px 24px;background:#000;color:#fff;font-family:"DM Sans",system-ui,sans-serif;line-height:1.45}'
+      + '*,*::before,*::after{box-sizing:border-box}img{max-width:100%;height:auto}a{color:#e7af27}</style>'
+      + '<style>' + css + '</style></head><body>' + html + '</body></html>';
+  }
+  var timer = null;
+  function onEdit() {
+    dirty = true;
+    count(htmlBox); count(cssBox);
+    clearTimeout(timer);
+    timer = setTimeout(render, 350);
+  }
+  htmlBox.addEventListener('input', onEdit);
+  cssBox.addEventListener('input', onEdit);
+  count(htmlBox); count(cssBox); render();
+
+  // Grow the preview to fit its content
+  function fit() {
+    try {
+      var h = frame.contentDocument.documentElement.scrollHeight;
+      frame.style.height = Math.min(Math.max(h, 240), 3000) + 'px';
+    } catch (err) {}
+  }
+  frame.addEventListener('load', function () { fit(); setTimeout(fit, 400); });
+
+  // Preview widths
+  form.querySelectorAll('[data-preview-width]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      form.querySelectorAll('[data-preview-width]').forEach(function (x) { x.classList.toggle('is-on', x === b); });
+      frame.style.width = b.getAttribute('data-preview-width');
+      setTimeout(fit, 350);
+    });
+  });
+
+  /* ---------- Insert example ---------- */
+  var exBtn = form.querySelector('[data-insert-example]');
+  var exData = document.getElementById('menu-example');
+  if (exBtn && exData) {
+    exBtn.addEventListener('click', function () {
+      if ((htmlBox.value.trim() || cssBox.value.trim()) && !confirm('Replace what is in the boxes with the example? (Nothing is saved until you press Save menu.)')) return;
+      var ex = JSON.parse(exData.textContent);
+      htmlBox.value = ex.html; cssBox.value = ex.css;
+      onEdit();
+    });
+  }
+
+  /* ---------- Unsaved changes warning ---------- */
+  form.addEventListener('submit', function () { dirty = false; });
+  window.addEventListener('beforeunload', function (e) { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+})();

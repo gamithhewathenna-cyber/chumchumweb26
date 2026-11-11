@@ -22,6 +22,8 @@ No frameworks, no build step, no Composer — upload and run on any cPanel host.
 ```
 index.php                 Homepage
 about.php                 About page (intro, our story, why choose us)
+menu.php                  Menu page (menu pasted as HTML + CSS in Admin → Menu Page)
+includes/menu.php         Cleans pasted menu HTML/CSS and keeps its styles inside the menu
 contact.php               Contact page (address, map, message form)
 includes/contact.php      Contact form: validation, spam protection, saving, email notification
 admin/                    Admin panel (login, content editing, users)
