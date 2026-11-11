@@ -43,7 +43,7 @@ Go to **`/admin/`** (e.g. https://www.chumchums.com.au/admin/).
   The *setup key* is the database password (`DB_PASS` in `config/config.php`).
   Once an account exists, the setup page is permanently disabled.
 - **Sidebar:** Dashboard · **Home Page** · Site Settings · Account & Users.
-  - *Home Page* has a tab bar with every homepage section, in page order: Hero, Menu Categories,
+  - *Home Page* has a tab bar with every homepage section, in page order: Hero, Slider,
     About, Opening Hours, Showcase Grid, Reservation, Testimonials.
   - *Site Settings* holds site-wide options: General & Contact, Links, Footer, SEO, Maintenance Mode.
   - New pages (About Us, Gallery, Contact…) will each get their own sidebar item with the same tab bar.

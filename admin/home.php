@@ -1,7 +1,7 @@
 <?php
 /**
  * Home Page → Hero / About / Reservation text & images.
- * (Menu Categories, Opening Hours, Showcase Grid and Testimonials have their
+ * (Slider, Opening Hours, Showcase Grid and Testimonials have their
  * own pages, all linked from the same Home Page tab bar.)
  */
 require __DIR__ . '/includes/admin.php';
@@ -9,10 +9,10 @@ require_login();
 $pdo = admin_db();
 
 $sections = [
-    'hero' => ['Hero', 'The hero is a slider: each dish in Menu Categories is one slide, with its own title, subtitle and photo (edit them under Menu Categories). The values below are the defaults used when a dish leaves a field empty.', [
+    'hero' => ['Hero', 'The hero is a slider: each dish is one slide, with its own title, subtitle and photo (edit them under the Slider tab). The values below are the defaults used when a dish leaves a field empty.', [
         'hero_badge'    => ['Default badge', 'text', 'The small pill above the title on every slide (unless a dish sets its own).'],
-        'hero_title'    => ['Fallback title', 'text', 'Only shown if there are no menu categories at all.'],
-        'hero_subtitle' => ['Fallback subtitle', 'text', 'Only shown if there are no menu categories at all.'],
+        'hero_title'    => ['Fallback title', 'text', 'Only shown if there are no slides at all.'],
+        'hero_subtitle' => ['Fallback subtitle', 'text', 'Only shown if there are no slides at all.'],
         'hero_image'    => ['Default dish photo', 'image', 'Shown for any dish that has no slide photo yet. Transparent PNG/WebP, about 1215 × 747 px.'],
     ]],
     'about' => ['About', 'The chef photo, story text and interior photo. The hours themselves are under Opening Hours.', [

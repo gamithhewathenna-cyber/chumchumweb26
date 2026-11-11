@@ -1,6 +1,6 @@
 <?php
 /**
- * Home Page → Menu Categories.
+ * Home Page → Slider.
  * Each category is a pill around the hero AND a slide in the hero slider
  * (its own title, subtitle, badge and dish photo).
  */
@@ -40,7 +40,7 @@ if (is_post()) {
 
     if ($op === 'delete') {
         $pdo->prepare('DELETE FROM menu_categories WHERE id = ?')->execute([(int) post('id')]);
-        flash('success', 'Category deleted.');
+        flash('success', 'Slide deleted.');
         redirect('categories.php');
     }
 
@@ -61,7 +61,7 @@ if (is_post()) {
         ];
         try {
             if ($id && !$row) {
-                throw new RuntimeException('That category no longer exists.');
+                throw new RuntimeException('That slide no longer exists.');
             }
             if ($data['name'] === '') {
                 throw new RuntimeException('Please enter a name.');
@@ -87,7 +87,7 @@ if (is_post()) {
                 $pdo->prepare('INSERT INTO menu_categories (' . implode(', ', $cols) . ') VALUES (' . rtrim(str_repeat('?, ', count($cols)), ', ') . ')')
                     ->execute($values);
             }
-            flash('success', 'Category "' . $data['name'] . '" saved.');
+            flash('success', 'Slide "' . $data['name'] . '" saved.');
             redirect('categories.php');
         } catch (RuntimeException $ex) {
             flash('error', $ex->getMessage());
@@ -102,7 +102,7 @@ if ($action === 'new' || $action === 'edit') {
     if (!isset($form)) {
         $form = $action === 'edit' ? find_category($pdo, $id) : null;
         if ($action === 'edit' && !$form) {
-            flash('error', 'That category was not found.');
+            flash('error', 'That slide was not found.');
             redirect('categories.php');
         }
         $form = $form ?: ['id' => 0, 'name' => '', 'link_url' => '#menu', 'side' => 'left', 'sort_order' => 0, 'is_active' => 1,
@@ -112,14 +112,14 @@ if ($action === 'new' || $action === 'edit') {
     admin_page_start('Home Page', 'home');
     home_tabs('categories');
     ?>
-    <p class="crumbs"><a href="categories.php">Menu Categories</a> › <?= $form['id'] ? 'Edit category' : 'Add category' ?></p>
+    <p class="crumbs"><a href="categories.php">Slider</a> › <?= $form['id'] ? 'Edit slide' : 'Add slide' ?></p>
     <form method="post" enctype="multipart/form-data">
       <?= csrf_field() ?>
       <input type="hidden" name="op" value="save">
       <input type="hidden" name="id" value="<?= (int) $form['id'] ?>">
 
       <section class="panel">
-        <h2 class="panel__title">Pill</h2>
+        <h2 class="panel__title">Pill button</h2>
         <?= field_text('name', 'Name', $form['name'], ['required' => true, 'maxlength' => 100, 'help' => 'The label on the pill, e.g. "Kottu".']) ?>
         <?= field_image('thumbnail', 'Pill thumbnail', $form['thumbnail'], 'Small cut-out dish photo (transparent PNG works best), about 120 × 75 px.') ?>
         <div class="field-row">
@@ -138,7 +138,7 @@ if ($action === 'new' || $action === 'edit') {
       </section>
 
       <section class="panel">
-        <h2 class="panel__title">Hero slide</h2>
+        <h2 class="panel__title">Slide</h2>
         <p class="muted small">Clicking this pill shows this slide in the big hero area. Empty fields use the defaults from the Hero tab.</p>
         <?= field_image('hero_image', 'Slide dish photo', $form['hero_image'],
             'Large cut-out dish photo on a transparent or black background, about 1215 × 747 px.'
@@ -147,12 +147,12 @@ if ($action === 'new' || $action === 'edit') {
           <?= field_checkbox('hero_image_remove', 'Remove this photo (use the default hero photo instead)', false) ?>
         <?php endif; ?>
         <?= field_text('hero_title', 'Slide title', $form['hero_title'], ['maxlength' => 150,
-            'placeholder' => $form['name'] !== '' ? $form['name'] : 'e.g. Chicken Kottu Roti', 'help' => 'Leave empty to use the category name.']) ?>
+            'placeholder' => $form['name'] !== '' ? $form['name'] : 'e.g. Chicken Kottu Roti', 'help' => 'Leave empty to use the pill name.']) ?>
         <?= field_text('hero_subtitle', 'Slide subtitle', $form['hero_subtitle'], ['maxlength' => 150, 'placeholder' => 'e.g. With Fresh Vegetables And Egg']) ?>
         <?= field_text('hero_badge', 'Slide badge', $form['hero_badge'], ['maxlength' => 100,
             'placeholder' => $defaults['hero_badge'], 'help' => 'The small pill above the title. Leave empty to use the default: "' . $defaults['hero_badge'] . '".']) ?>
         <div class="actions">
-          <button class="btn btn--primary" type="submit">Save category</button>
+          <button class="btn btn--primary" type="submit">Save slide</button>
           <a class="btn btn--ghost" href="categories.php">Cancel</a>
         </div>
       </section>
@@ -170,8 +170,8 @@ admin_page_start('Home Page', 'home');
 home_tabs('categories');
 ?>
   <div class="toolbar">
-    <p class="muted">Each category is a pill beside the hero <strong>and</strong> a slide in the hero slider. Clicking a pill on the website shows its slide. The design fits three pills on each side.</p>
-    <a class="btn btn--primary" href="categories.php?action=new">+ Add category</a>
+    <p class="muted">The dish slider at the top of the home page. Each slide has a pill button beside it — clicking the pill shows that slide. The design fits three pills on each side.</p>
+    <a class="btn btn--primary" href="categories.php?action=new">+ Add slide</a>
   </div>
 
   <?php if ($missingPhotos > 0): ?>
@@ -179,7 +179,7 @@ home_tabs('categories');
   <?php endif; ?>
 
   <?php if (!$rows): ?>
-    <div class="panel empty">No categories yet. The hero shows the default content from the Hero tab.</div>
+    <div class="panel empty">No slides yet. The hero shows the default content from the Hero tab.</div>
   <?php else: ?>
     <div class="table-wrap">
       <table class="table">
@@ -197,7 +197,7 @@ home_tabs('categories');
             <td><?= $r['is_active'] ? '<span class="badge badge--on">Shown</span>' : '<span class="badge">Hidden</span>' ?></td>
             <td class="table__actions">
               <a class="btn btn--small" href="categories.php?action=edit&amp;id=<?= (int) $r['id'] ?>">Edit</a>
-              <form method="post" data-confirm="Delete the category &quot;<?= e($r['name']) ?>&quot;?">
+              <form method="post" data-confirm="Delete the slide &quot;<?= e($r['name']) ?>&quot;?">
                 <?= csrf_field() ?>
                 <input type="hidden" name="op" value="delete">
                 <input type="hidden" name="id" value="<?= (int) $r['id'] ?>">

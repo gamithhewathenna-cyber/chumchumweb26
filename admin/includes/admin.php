@@ -489,7 +489,7 @@ function home_sections(): array
 {
     return [
         'hero'         => ['Hero',            'home.php?section=hero'],
-        'categories'   => ['Menu Categories', 'categories.php'],
+        'categories'   => ['Slider',          'categories.php'],
         'about'        => ['About',           'home.php?section=about'],
         'hours'        => ['Opening Hours',   'hours.php'],
         'showcase'     => ['Showcase Grid',   'showcase.php'],

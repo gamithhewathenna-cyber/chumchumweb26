@@ -14,7 +14,7 @@ function count_rows(PDO $pdo, string $sql): int
 
 $homeCards = [
     ['home.php?section=hero',        'Hero',            'Default badge and photo for the dish slider.', null],
-    ['categories.php',               'Menu Categories', 'Dish pills and their hero slides (title, subtitle, photo).', count_rows($pdo, 'SELECT COUNT(*) FROM menu_categories WHERE is_active = 1') . ' slides'],
+    ['categories.php',               'Slider',          'Dish slides: photo, title, subtitle and pill button.', count_rows($pdo, 'SELECT COUNT(*) FROM menu_categories WHERE is_active = 1') . ' slides'],
     ['home.php?section=about',       'About',           'Story text, chef and interior photos.', null],
     ['hours.php',                    'Opening Hours',   'Rows in the yellow Opening Hours card.', count_rows($pdo, 'SELECT COUNT(*) FROM opening_hours') . ' rows'],
     ['showcase.php',                 'Showcase Grid',   'The 7 tiles under the About section.', '7 tiles'],
