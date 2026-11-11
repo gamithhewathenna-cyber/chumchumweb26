@@ -122,15 +122,26 @@
     el.classList.toggle('is-big', kb > 1800);
   }
 
-  /* ---------- Live preview (approximates the website: dark background, site font) ---------- */
-  function render() {
-    var html = codeBox.value.replace(/<script\b[\s\S]*?<\/script\s*>/gi, '');
-    frame.srcdoc = '<!doctype html><html><head><meta charset="utf-8"><base target="_blank">'
-      + '<style>@font-face{font-family:"DM Sans";src:url("' + fontUrl + '") format("woff2");font-weight:100 1000;}'
-      + 'html,body{margin:0}body{padding:28px 24px;background:#000;color:#fff;font-family:"DM Sans",system-ui,sans-serif;line-height:1.45}'
-      + '*,*::before,*::after{box-sizing:border-box}img{max-width:100%;height:auto}a{color:#e7af27}</style>'
-      + '</head><body>' + html + '</body></html>'; // the pasted <style> works anywhere in the page
+  /* ---------- Live preview: the same sealed frame as the website (scripts run, fully isolated) ---------- */
+  var parts = JSON.parse((document.getElementById('menu-frame-parts') || {}).textContent || '{}');
+  // Mirrors menu_document() in includes/menu.php
+  function buildDocument(code) {
+    if (!/<html\b|<body\b|<head\b/i.test(code)) {
+      return parts.fragment.split(parts.marker).join(code);
+    }
+    var head = '<meta charset="utf-8">' + parts.defaults;
+    if (/<head\b[^>]*>/i.test(code)) {
+      code = code.replace(/<head\b[^>]*>/i, function (m) { return m + head; });
+    } else if (/<html\b[^>]*>/i.test(code)) {
+      code = code.replace(/<html\b[^>]*>/i, function (m) { return m + '<head>' + head + '</head>'; });
+    } else {
+      code = '<head>' + head + '</head>' + code;
+    }
+    return /<\/body\s*>/i.test(code)
+      ? code.replace(/<\/body\s*>/i, function (m) { return parts.resize + m; })
+      : code + parts.resize;
   }
+  function render() { frame.srcdoc = buildDocument(codeBox.value); }
   var timer = null;
   function onEdit() {
     dirty = true;
@@ -141,14 +152,15 @@
   codeBox.addEventListener('input', onEdit);
   count(codeBox); render();
 
-  // Grow the preview to fit its content
-  function fit() {
-    try {
-      var h = frame.contentDocument.documentElement.scrollHeight;
-      frame.style.height = Math.min(Math.max(h, 240), 3000) + 'px';
-    } catch (err) {}
-  }
-  frame.addEventListener('load', function () { fit(); setTimeout(fit, 400); });
+  // Grow the preview to fit its content (the sealed frame reports its own height)
+  var lastHeight = 0;
+  function fit() { if (lastHeight) frame.style.height = Math.min(Math.max(lastHeight, 200), 20000) + 'px'; }
+  window.addEventListener('message', function (e) {
+    if (e.source === frame.contentWindow && e.data && typeof e.data.chumMenuHeight === 'number') {
+      lastHeight = Math.ceil(e.data.chumMenuHeight);
+      fit();
+    }
+  });
 
   // Preview widths
   form.querySelectorAll('[data-preview-width]').forEach(function (b) {

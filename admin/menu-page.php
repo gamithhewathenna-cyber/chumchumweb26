@@ -165,9 +165,7 @@ if (is_post()) {
                     save_setting($pdo, 'menu_html', trim($new) === '' ? '' : $new);
                     save_setting($pdo, 'menu_css', '');
                     $pdo->commit();
-                    $removed = substr_count(strtolower($new), '<script');
-                    flash('success', 'Menu saved — it is live on the website now.'
-                        . ($removed ? ' Note: ' . $removed . ' <script> tag' . ($removed === 1 ? ' was' : 's were') . ' ignored for safety.' : ''));
+                    flash('success', 'Menu saved — it is live on the website now.');
                 } catch (Throwable $ex) {
                     if ($pdo->inTransaction()) {
                         $pdo->rollBack();
@@ -209,10 +207,10 @@ menu_tabs('code');
   <div class="panel tips">
     <h2 class="panel__title">How to add your menu</h2>
     <ol>
-      <li>Copy your menu's code — the HTML <strong>with its CSS</strong> in <code>&lt;style&gt;…&lt;/style&gt;</code> — and paste it all into the box below. A whole HTML page works too.</li>
+      <li>Copy your menu's code — the HTML <strong>with its CSS</strong> in <code>&lt;style&gt;…&lt;/style&gt;</code> — and paste it all into the box below. A whole HTML page works too, <strong>including menus built with JavaScript</strong> (tabs, categories…).</li>
       <li>Check the <strong>live preview</strong> underneath, then press <strong>Save menu</strong>. It goes live straight away.</li>
-      <li>The CSS only styles the menu — it can't change the site's header or footer. <code>body</code> / <code>html</code> styles apply to the menu area.</li>
-      <li>For pictures, upload them in <a href="menu-page.php?tab=images">Menu Images</a> and use the copied address. <code>&lt;script&gt;</code> tags are removed for safety.</li>
+      <li>The menu runs in a sealed frame: its CSS and scripts only affect the menu — they can't change or read the rest of the website.</li>
+      <li>For pictures, upload them in <a href="menu-page.php?tab=images">Menu Images</a> and use the copied address.</li>
     </ol>
   </div>
 
@@ -245,7 +243,7 @@ menu_tabs('code');
         </div>
       </div>
       <div class="preview__frame-wrap">
-        <iframe class="preview__frame" title="Menu preview" sandbox="allow-same-origin" referrerpolicy="no-referrer"></iframe>
+        <iframe class="preview__frame" title="Menu preview" sandbox="<?= MENU_SANDBOX ?>" referrerpolicy="no-referrer"></iframe>
       </div>
     </div>
   </form>
@@ -259,4 +257,16 @@ menu_tabs('code');
   <?php endif; ?>
 
   <script type="application/json" id="menu-example"><?= json_encode(['code' => $example], JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES) ?></script>
+  <?php
+  // The preview builds the same sealed page as the website (includes/menu.php → menu_document()),
+  // using the very same defaults and resize script.
+  $marker = '%%CHUM_MENU_CODE%%';
+  $frameParts = [
+      'defaults' => menu_frame_defaults(),
+      'resize'   => menu_resize_script(),
+      'fragment' => menu_document($marker), // wrapper used when just a fragment is pasted
+      'marker'   => $marker,
+  ];
+  ?>
+  <script type="application/json" id="menu-frame-parts"><?= json_encode($frameParts, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES) ?></script>
 <?php admin_page_end();

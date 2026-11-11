@@ -3,7 +3,7 @@ require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/menu.php';
 
 $s    = get_settings();
-$menu = menu_prepare((string) $s['menu_html'], (string) $s['menu_css']);
+$code = menu_combine((string) $s['menu_html'], (string) $s['menu_css']);
 
 $pageTitle       = $s['menu_title'] . ' | ' . $s['site_name'] . ' — Sri Lankan Restaurant, Clayton';
 $pageDescription = $s['menu_meta_description'];
@@ -31,7 +31,7 @@ require __DIR__ . '/includes/partials/header.php';
 
   <!-- ============ THE MENU (pasted in Admin → Menu Page) ============ -->
   <section class="menu-body" aria-label="Our menu">
-    <?php if ($menu['html'] === ''): ?>
+    <?php if (trim($code) === ''): ?>
       <div class="menu-empty" data-reveal>
         <p><?= e($s['menu_empty_text']) ?></p>
         <?php if ($s['phone'] !== ''): ?>
@@ -39,21 +39,10 @@ require __DIR__ . '/includes/partials/header.php';
         <?php endif; ?>
       </div>
     <?php else: ?>
-      <?php if ($menu['page_css'] !== ''): ?>
-        <style><?= $menu['page_css'] /* fonts used by the menu */ ?></style>
-      <?php endif; ?>
       <div class="menu-embed" data-reveal>
-        <template shadowrootmode="open">
-          <style>
-            :host { display: block; color: #fff; font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.45; }
-            *, *::before, *::after { box-sizing: border-box; }
-            img, video, svg { max-width: 100%; height: auto; }
-            a { color: #e7af27; }
-            table { border-collapse: collapse; }
-          </style>
-          <style><?= $menu['css'] /* pasted menu CSS — only affects the menu */ ?></style>
-          <?= $menu['html'] /* pasted menu HTML (cleaned in includes/menu.php) */ ?>
-        </template>
+        <!-- The pasted menu runs in a sealed (sandboxed) frame: its scripts work, but it can't touch the site -->
+        <iframe class="menu-frame" title="<?= e($s['menu_title']) ?>" sandbox="<?= MENU_SANDBOX ?>"
+                srcdoc="<?= e(menu_document($code)) ?>"></iframe>
       </div>
     <?php endif; ?>
   </section>

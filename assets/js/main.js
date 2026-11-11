@@ -84,13 +84,17 @@
     });
   }
 
-  /* ---------- Menu page: support older browsers without declarative Shadow DOM ---------- */
-  document.querySelectorAll('template[shadowrootmode]').forEach(function (tpl) {
-    var host = tpl.parentNode;
-    if (!host || host.shadowRoot || !host.attachShadow) return;
-    host.attachShadow({ mode: tpl.getAttribute('shadowrootmode') || 'open' }).appendChild(tpl.content);
-    tpl.remove();
-  });
+  /* ---------- Menu page: the sealed menu frame reports its height; grow/shrink to fit ---------- */
+  var menuFrames = Array.prototype.slice.call(document.querySelectorAll('.menu-frame'));
+  if (menuFrames.length) {
+    window.addEventListener('message', function (e) {
+      var h = e.data && typeof e.data.chumMenuHeight === 'number' ? e.data.chumMenuHeight : 0;
+      if (!h) return;
+      menuFrames.forEach(function (f) {
+        if (f.contentWindow === e.source) f.style.height = Math.min(Math.max(Math.ceil(h), 120), 40000) + 'px';
+      });
+    });
+  }
 
   /* ---------- Contact form ---------- */
   var cform = document.querySelector('[data-contact-form]');
