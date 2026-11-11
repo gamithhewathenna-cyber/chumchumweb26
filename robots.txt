@@ -1,0 +1,5 @@
+# Chum Chum's — instructions for search engine crawlers
+User-agent: *
+Disallow: /admin/
+
+Sitemap: https://www.chumchums.com.au/sitemap.xml

@@ -13,6 +13,9 @@ DirectoryIndex index.php
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule ^ https://www.chumchums.com.au%{REQUEST_URI} [L,R=301]
 
+  # Sitemap for search engines, built live by sitemap.php
+  RewriteRule ^sitemap\.xml$ sitemap.php [L]
+
   # Private folders (each also has its own .htaccess)
   RewriteRule ^(config|database|admin/includes)(/|$) - [F,L]
 </IfModule>
