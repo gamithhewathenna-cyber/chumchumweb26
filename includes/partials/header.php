@@ -13,6 +13,7 @@ $current         = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
 <title><?= e($pageTitle) ?></title>
 <meta name="description" content="<?= e($pageDescription) ?>">
 <meta name="theme-color" content="#000000">
+<meta name="google-site-verification" content="cuSIctaQ66p265EZgNNCAQYhP_QxzRI16NgKXT2ZPqk" />
 <meta property="og:title" content="<?= e($pageTitle) ?>">
 <meta property="og:description" content="<?= e($pageDescription) ?>">
 <meta property="og:type" content="website">

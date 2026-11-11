@@ -10,6 +10,7 @@ $mMessage = trim((string) ($s['maintenance_message'] ?? ''));
 <meta name="robots" content="noindex">
 <title><?= e($mTitle) ?> | <?= e($s['site_name']) ?></title>
 <meta name="theme-color" content="#000000">
+<meta name="google-site-verification" content="cuSIctaQ66p265EZgNNCAQYhP_QxzRI16NgKXT2ZPqk" />
 <link rel="icon" type="image/png" href="<?= e(asset('img/logo.png')) ?>">
 <link rel="stylesheet" href="<?= e(asset('css/style.css')) ?>">
 <style>
