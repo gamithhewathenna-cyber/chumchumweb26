@@ -48,7 +48,9 @@ ErrorDocument 404 /404.php
 
 # ---------- Speed: compress text files ----------
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml application/xml application/javascript application/json image/svg+xml
+  <IfModule mod_filter.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml application/xml application/javascript application/json image/svg+xml
+  </IfModule>
 </IfModule>
 
 # ---------- Speed: let browsers keep files (CSS/JS/images carry a ?v= version, so changes still show at once) ----------
