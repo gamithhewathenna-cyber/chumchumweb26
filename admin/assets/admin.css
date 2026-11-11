@@ -281,7 +281,7 @@ body.auth { min-height: 100vh; display: grid; place-items: center; padding: 24px
 .code-field__meta { color: var(--muted); font-size: 12px; }
 .code-field__meta.is-big { color: var(--danger); font-weight: 600; }
 .code-editor {
-  width: 100%; height: 460px; min-height: 200px; resize: vertical; padding: 14px 16px;
+  width: 100%; height: 560px; min-height: 200px; resize: vertical; padding: 14px 16px;
   background: #16171b; color: #e8e6df; caret-color: var(--gold);
   border: 1px solid #2c2d33; border-radius: 10px; outline: none;
   font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;

@@ -1,6 +1,6 @@
 <?php
 /**
- * Menu Page: paste the menu as HTML + CSS (with live preview and one-step undo),
+ * Menu Page: paste the menu as one block of HTML with its CSS (live preview + one-step undo),
  * upload images to use in it, and edit the page title / banner / SEO.
  */
 require __DIR__ . '/includes/admin.php';
@@ -135,33 +135,46 @@ if ($tab === 'images') {
     exit;
 }
 
-/* ======================= Menu HTML & CSS ======================= */
+/* ======================= Menu code (one box: HTML with its CSS in <style>) ======================= */
 ensure_settings_mediumtext($pdo);
 $s = get_settings();
-$html = (string) ($s['menu_html'] ?? '');
-$css  = (string) ($s['menu_css'] ?? '');
+// Older saves kept CSS in a separate field — fold it into the single box
+$code = menu_combine((string) ($s['menu_html'] ?? ''), (string) ($s['menu_css'] ?? ''));
 
 if (is_post()) {
     verify_csrf();
     $op = post('op');
 
     if ($op === 'save_code') {
-        $newHtml = str_replace("\r\n", "\n", (string) ($_POST['menu_html'] ?? ''));
-        $newCss  = str_replace("\r\n", "\n", (string) ($_POST['menu_css'] ?? ''));
-        if (strlen($newHtml) > MENU_MAX_BYTES || strlen($newCss) > MENU_MAX_BYTES) {
-            flash('error', 'That is too large (max 2 MB each for HTML and CSS). If your HTML contains pasted images ("data:image…"), upload them in the Menu Images tab instead.');
-            $html = $newHtml; $css = $newCss;
+        $new = str_replace("\r\n", "\n", (string) ($_POST['menu_code'] ?? ''));
+        if (!mb_check_encoding($new, 'UTF-8')) {
+            // e.g. text pasted from an old Windows program — replace the few broken characters instead of failing
+            $new = mb_convert_encoding($new, 'UTF-8', 'UTF-8');
+        }
+        if (strlen($new) > MENU_MAX_BYTES) {
+            flash('error', 'That is too large (max 2 MB). If your code contains pasted images ("data:image…"), upload them in the Menu Images tab instead.');
+            $code = $new;
         } else {
-            if ($newHtml !== $html || $newCss !== $css) {
-                // Keep the previous version so it can be restored
-                save_setting($pdo, 'menu_html_backup', $html);
-                save_setting($pdo, 'menu_css_backup', $css);
-                save_setting($pdo, 'menu_backup_at', date('Y-m-d H:i:s'));
-                save_setting($pdo, 'menu_html', trim($newHtml) === '' ? '' : $newHtml);
-                save_setting($pdo, 'menu_css', $newCss);
-                $removed = substr_count(strtolower($newHtml), '<script');
-                flash('success', 'Menu saved — it is live on the website now.'
-                    . ($removed ? ' Note: ' . $removed . ' <script> tag' . ($removed === 1 ? ' was' : 's were') . ' ignored for safety.' : ''));
+            if ($new !== $code) {
+                try {
+                    $pdo->beginTransaction();
+                    // Keep the previous version so it can be restored
+                    save_setting($pdo, 'menu_html_backup', $code);
+                    save_setting($pdo, 'menu_css_backup', '');
+                    save_setting($pdo, 'menu_backup_at', date('Y-m-d H:i:s'));
+                    save_setting($pdo, 'menu_html', trim($new) === '' ? '' : $new);
+                    save_setting($pdo, 'menu_css', '');
+                    $pdo->commit();
+                    $removed = substr_count(strtolower($new), '<script');
+                    flash('success', 'Menu saved — it is live on the website now.'
+                        . ($removed ? ' Note: ' . $removed . ' <script> tag' . ($removed === 1 ? ' was' : 's were') . ' ignored for safety.' : ''));
+                } catch (Throwable $ex) {
+                    if ($pdo->inTransaction()) {
+                        $pdo->rollBack();
+                    }
+                    error_log('[ChumChums] menu save: ' . $ex->getMessage());
+                    flash('error', 'The menu could not be saved (' . $ex->getMessage() . '). Your previous menu is still live.');
+                }
             } else {
                 flash('info', 'No changes to save.');
             }
@@ -174,10 +187,11 @@ if (is_post()) {
             flash('error', 'There is no previous version to restore.');
         } else {
             // Swap current ⇄ previous, so a restore can itself be undone
-            save_setting($pdo, 'menu_html', (string) $s['menu_html_backup']);
-            save_setting($pdo, 'menu_css', (string) $s['menu_css_backup']);
-            save_setting($pdo, 'menu_html_backup', $html);
-            save_setting($pdo, 'menu_css_backup', $css);
+            $previous = menu_combine((string) $s['menu_html_backup'], (string) ($s['menu_css_backup'] ?? ''));
+            save_setting($pdo, 'menu_html', $previous);
+            save_setting($pdo, 'menu_css', '');
+            save_setting($pdo, 'menu_html_backup', $code);
+            save_setting($pdo, 'menu_css_backup', '');
             save_setting($pdo, 'menu_backup_at', date('Y-m-d H:i:s'));
             flash('success', 'Previous version restored. (Press Restore again to switch back.)');
         }
@@ -185,9 +199,9 @@ if (is_post()) {
     }
 }
 
-$example   = menu_example();
-$backupAt  = $s['menu_backup_at'] ?? null;
-$fontUrl   = asset('fonts/dm-sans-latin-opsz-normal.woff2');
+$example  = menu_example();
+$backupAt = $s['menu_backup_at'] ?? null;
+$fontUrl  = asset('fonts/dm-sans-latin-opsz-normal.woff2');
 
 admin_page_start('Menu Page', 'menu-page');
 menu_tabs('code');
@@ -195,9 +209,9 @@ menu_tabs('code');
   <div class="panel tips">
     <h2 class="panel__title">How to add your menu</h2>
     <ol>
-      <li>Paste your menu's <strong>HTML</strong> on the left and its <strong>CSS</strong> on the right. You can also paste a <em>whole</em> HTML page into the HTML box — its <code>&lt;style&gt;</code> and font links are picked up automatically.</li>
+      <li>Copy your menu's code — the HTML <strong>with its CSS</strong> in <code>&lt;style&gt;…&lt;/style&gt;</code> — and paste it all into the box below. A whole HTML page works too.</li>
       <li>Check the <strong>live preview</strong> underneath, then press <strong>Save menu</strong>. It goes live straight away.</li>
-      <li>Your menu's CSS only styles the menu — it can't change the site's header or footer. <code>body</code> / <code>html</code> styles apply to the menu area.</li>
+      <li>The CSS only styles the menu — it can't change the site's header or footer. <code>body</code> / <code>html</code> styles apply to the menu area.</li>
       <li>For pictures, upload them in <a href="menu-page.php?tab=images">Menu Images</a> and use the copied address. <code>&lt;script&gt;</code> tags are removed for safety.</li>
     </ol>
   </div>
@@ -205,30 +219,20 @@ menu_tabs('code');
   <form method="post" class="code-form" id="menu-code-form" data-font="<?= e($fontUrl) ?>">
     <?= csrf_field() ?>
     <input type="hidden" name="op" value="save_code">
-    <div class="code-grid">
-      <div class="code-field">
-        <div class="code-field__head">
-          <label for="menu_html">HTML</label>
-          <span class="code-field__meta" data-count-for="menu_html"></span>
-        </div>
-        <textarea class="code-editor" id="menu_html" name="menu_html" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off"
-                  placeholder="&lt;div class=&quot;menu&quot;&gt;…&lt;/div&gt;   — or paste a whole HTML page"><?= e($html) ?></textarea>
+    <div class="code-field">
+      <div class="code-field__head">
+        <label for="menu_code">Menu code <span class="muted small">(HTML + CSS)</span></label>
+        <span class="code-field__meta" data-count-for="menu_code"></span>
       </div>
-      <div class="code-field">
-        <div class="code-field__head">
-          <label for="menu_css">CSS</label>
-          <span class="code-field__meta" data-count-for="menu_css"></span>
-        </div>
-        <textarea class="code-editor" id="menu_css" name="menu_css" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off"
-                  placeholder=".menu { … }"><?= e($css) ?></textarea>
-      </div>
+      <textarea class="code-editor" id="menu_code" name="menu_code" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off"
+                placeholder="&lt;style&gt;&#10;  .menu { … }&#10;&lt;/style&gt;&#10;&#10;&lt;div class=&quot;menu&quot;&gt;…&lt;/div&gt;"><?= e($code) ?></textarea>
     </div>
 
     <div class="code-actions">
       <button class="btn btn--primary" type="submit">Save menu</button>
       <a class="btn btn--ghost" href="<?= e(base_url('menu.php')) ?>" target="_blank" rel="noopener">View menu page ↗</a>
       <button class="btn btn--ghost" type="button" data-insert-example>Insert example</button>
-      <span class="muted small code-actions__hint">Tip: the Tab key indents inside the boxes · Ctrl/⌘ + S saves</span>
+      <span class="muted small code-actions__hint">Tip: the Tab key indents · Ctrl/⌘ + S saves</span>
     </div>
 
     <div class="preview">
@@ -254,5 +258,5 @@ menu_tabs('code');
     </form>
   <?php endif; ?>
 
-  <script type="application/json" id="menu-example"><?= json_encode($example, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES) ?></script>
+  <script type="application/json" id="menu-example"><?= json_encode(['code' => $example], JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES) ?></script>
 <?php admin_page_end();

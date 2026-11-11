@@ -81,8 +81,14 @@ function menu_prepare(string $html, string $css): array
     return ['page_css' => trim($pageCss), 'css' => trim($innerCss), 'html' => trim($html)];
 }
 
+/** One block of code: CSS (if any) in a <style> tag, followed by the HTML. */
+function menu_combine(string $html, string $css): string
+{
+    return trim($css) === '' ? $html : "<style>\n" . trim($css) . "\n</style>\n\n" . $html;
+}
+
 /** Starter example shown by the admin's "Insert example" button (never saved automatically). */
-function menu_example(): array
+function menu_example(): string
 {
     $html = <<<'HTML'
 <div class="menu">
@@ -110,5 +116,5 @@ HTML;
 .menu-section p { margin: 4px 0 0; color: #bbb; font-size: 14px; }
 .price { color: #e7af27; font-weight: 600; white-space: nowrap; }
 CSS;
-    return ['html' => $html, 'css' => $css];
+    return menu_combine($html, $css);
 }

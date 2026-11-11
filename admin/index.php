@@ -28,7 +28,7 @@ $aboutCards = [
     ['about-features.php',           'Why Choose Us',  'Heading and the feature cards.', null],
 ];
 $menuCards = [
-    ['menu-page.php',            'Menu HTML & CSS',     'Paste your menu, preview it live, restore the previous version.', null],
+    ['menu-page.php',            'Menu Code',           'Paste your menu (HTML with its CSS), preview it live, restore the previous version.', null],
     ['menu-page.php?tab=images', 'Menu Images',         'Upload photos for the menu and copy their address.', null],
     ['menu-page.php?tab=page',   'Title, Banner & SEO', 'Page heading, intro text and banner photo.', null],
 ];

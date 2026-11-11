@@ -564,7 +564,7 @@ function ensure_about_features_table(PDO $pdo): void
 function menu_tabs(string $active): void
 {
     $tabs = [
-        'code'   => ['Menu HTML & CSS',   'menu-page.php'],
+        'code'   => ['Menu Code',         'menu-page.php'],
         'images' => ['Menu Images',       'menu-page.php?tab=images'],
         'page'   => ['Title, Banner & SEO', 'menu-page.php?tab=page'],
     ];

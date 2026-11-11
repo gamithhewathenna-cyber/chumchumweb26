@@ -85,14 +85,13 @@
 
   var form = document.getElementById('menu-code-form');
   if (!form) return;
-  var htmlBox = form.querySelector('#menu_html');
-  var cssBox = form.querySelector('#menu_css');
+  var codeBox = form.querySelector('#menu_code');
   var frame = form.querySelector('.preview__frame');
   var fontUrl = form.getAttribute('data-font');
   var dirty = false;
 
   /* ---------- Editor behaviour: Tab indents, Shift+Tab outdents, Ctrl/Cmd+S saves ---------- */
-  [htmlBox, cssBox].forEach(function (box) {
+  [codeBox].forEach(function (box) {
     box.addEventListener('keydown', function (e) {
       if (e.key !== 'Tab' || e.ctrlKey || e.metaKey || e.altKey) return;
       e.preventDefault();
@@ -125,24 +124,22 @@
 
   /* ---------- Live preview (approximates the website: dark background, site font) ---------- */
   function render() {
-    var css = cssBox.value.replace(/<\/style/gi, '<\\/style');
-    var html = htmlBox.value.replace(/<script\b[\s\S]*?<\/script\s*>/gi, '');
+    var html = codeBox.value.replace(/<script\b[\s\S]*?<\/script\s*>/gi, '');
     frame.srcdoc = '<!doctype html><html><head><meta charset="utf-8"><base target="_blank">'
       + '<style>@font-face{font-family:"DM Sans";src:url("' + fontUrl + '") format("woff2");font-weight:100 1000;}'
       + 'html,body{margin:0}body{padding:28px 24px;background:#000;color:#fff;font-family:"DM Sans",system-ui,sans-serif;line-height:1.45}'
       + '*,*::before,*::after{box-sizing:border-box}img{max-width:100%;height:auto}a{color:#e7af27}</style>'
-      + '<style>' + css + '</style></head><body>' + html + '</body></html>';
+      + '</head><body>' + html + '</body></html>'; // the pasted <style> works anywhere in the page
   }
   var timer = null;
   function onEdit() {
     dirty = true;
-    count(htmlBox); count(cssBox);
+    count(codeBox);
     clearTimeout(timer);
     timer = setTimeout(render, 350);
   }
-  htmlBox.addEventListener('input', onEdit);
-  cssBox.addEventListener('input', onEdit);
-  count(htmlBox); count(cssBox); render();
+  codeBox.addEventListener('input', onEdit);
+  count(codeBox); render();
 
   // Grow the preview to fit its content
   function fit() {
@@ -167,9 +164,8 @@
   var exData = document.getElementById('menu-example');
   if (exBtn && exData) {
     exBtn.addEventListener('click', function () {
-      if ((htmlBox.value.trim() || cssBox.value.trim()) && !confirm('Replace what is in the boxes with the example? (Nothing is saved until you press Save menu.)')) return;
-      var ex = JSON.parse(exData.textContent);
-      htmlBox.value = ex.html; cssBox.value = ex.css;
+      if (codeBox.value.trim() && !confirm('Replace what is in the box with the example? (Nothing is saved until you press Save menu.)')) return;
+      codeBox.value = JSON.parse(exData.textContent).code;
       onEdit();
     });
   }
