@@ -21,6 +21,12 @@ $homeCards = [
     ['home.php?section=reservation', 'Reservation',     'Booking heading, text and photo.', null],
     ['testimonials.php',             'Testimonials',    'Guest reviews in the yellow slider.', count_rows($pdo, 'SELECT COUNT(*) FROM testimonials WHERE is_active = 1') . ' shown'],
 ];
+$aboutCards = [
+    ['about-page.php?section=header', 'Title & Banner', 'Page title, intro and the wide banner photo.', null],
+    ['about-page.php?section=intro',  'Intro',          '"A Taste Of Sri Lanka" text and the tall photo.', null],
+    ['about-page.php?section=story',  'Our Story',      'Story text and background photo.', null],
+    ['about-features.php',           'Why Choose Us',  'Heading and the feature cards.', null],
+];
 $unreadMsgs   = unread_message_count();
 $contactCards = [
     ['messages.php',     'Messages',     'Everything sent through the website contact form.',
@@ -43,6 +49,16 @@ admin_page_start('Dashboard', 'index');
         <h2><?= e($title) ?></h2>
         <p><?= e($text) ?></p>
         <?php if ($meta !== null): ?><span class="badge"><?= e($meta) ?></span><?php endif; ?>
+      </a>
+    <?php endforeach; ?>
+  </div>
+
+  <h2 class="section-title">About Page</h2>
+  <div class="cards">
+    <?php foreach ($aboutCards as [$href, $title, $text, $meta]): ?>
+      <a class="card card--link" href="<?= e($href) ?>">
+        <h2><?= e($title) ?></h2>
+        <p><?= e($text) ?></p>
       </a>
     <?php endforeach; ?>
   </div>

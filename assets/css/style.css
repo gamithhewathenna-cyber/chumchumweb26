@@ -725,6 +725,91 @@ body.drawer-open { overflow: hidden; }
   .contact__sent p { font-size: calc(16 * var(--u)); max-width: calc(440 * var(--u)); }
 }
 
+/* ==========================================================================
+   About page
+   ========================================================================== */
+/* Intro: text beside the fork photo */
+.ap-intro { position: relative; display: grid; gap: 40px; padding: 72px 20px 24px; }
+.ap-intro__content .tag { margin-bottom: 22px; }
+.ap-intro__title { font-size: 26px; font-weight: 400; line-height: 1.28; }
+.ap-intro__text { margin-top: 18px; display: grid; gap: 16px; color: var(--text-soft); font-size: 14px; line-height: 1.55; }
+.ap-intro__media { justify-self: center; width: min(360px, 82%); overflow: hidden; }
+.ap-intro__media img { width: 100%; height: auto;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 10%, #000 88%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0, #000 10%, #000 88%, transparent 100%); }
+
+/* Our Story: text over a dark, softly blurred restaurant photo */
+.ap-story { position: relative; isolation: isolate; overflow: hidden; display: grid; gap: 24px; padding: 72px 20px; background: #0d0d0d; }
+.ap-story__bg {
+  position: absolute; inset: -12px; z-index: -1; width: calc(100% + 24px); height: calc(100% + 24px); max-width: none;
+  object-fit: cover; filter: blur(2px) brightness(.38) saturate(.9);
+}
+.ap-story::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(0,0,0,.35), rgba(0,0,0,.1) 60%, rgba(0,0,0,.3)); }
+.ap-story__title { font-size: clamp(48px, 13vw, 72px); font-weight: 400; line-height: 1; letter-spacing: -.01em; }
+.ap-story__text { display: grid; gap: 16px; font-size: 14px; line-height: 1.55; color: #e9e9e9; }
+
+/* Why choose: centred head + five cards */
+.ap-why { padding: 72px 20px 24px; }
+.ap-why__head { display: grid; justify-items: center; text-align: center; }
+.ap-why__title { margin-top: 20px; font-size: 26px; font-weight: 400; line-height: 1.2; letter-spacing: .01em; }
+.ap-why__text { margin-top: 6px; max-width: 520px; color: var(--text-soft); font-size: 14px; line-height: 1.4; }
+.ap-why__cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-top: 44px; }
+.ap-why__cards > li { display: grid; }
+.ap-card {
+  display: grid; align-content: start; gap: 14px; padding: 22px 16px 24px; text-align: center;
+  background: #1d1d1d; border: 1px solid #3b3b3b; border-radius: 18px;
+}
+.ap-card h3 { font-size: 14px; font-weight: 700; line-height: 1.35; }
+.ap-card p { color: #c9c9c9; font-size: 13px; line-height: 1.5; }
+.about-page .reservation { padding-top: 140px; }
+
+@media (min-width: 768px) {
+  .ap-intro { grid-template-columns: 1fr minmax(260px, 38%); align-items: center; gap: 48px; padding: 96px 40px 40px; }
+  .ap-intro__media { width: 100%; }
+  .ap-story { grid-template-columns: 1fr 1.6fr; align-items: start; padding: 110px 40px; gap: 32px 48px; }
+  .ap-why { padding: 110px 40px 32px; }
+}
+
+/* Desktop: the 1440px design, scaled with --u */
+@media (min-width: 1200px) {
+  .ap-intro { display: block; height: calc(722 * var(--u)); padding: 0; gap: 0; }
+  .ap-intro__content { position: absolute; left: calc(194 * var(--u)); top: calc(181 * var(--u)); width: calc(566 * var(--u)); }
+  .ap-intro__content .tag { margin-bottom: calc(29 * var(--u)); }
+  .ap-intro__title { font-size: calc(28.5 * var(--u)); line-height: calc(38 * var(--u)); }
+  .ap-intro__text { margin-top: calc(22 * var(--u)); gap: calc(20 * var(--u)); font-size: calc(12.6 * var(--u)); line-height: calc(20.5 * var(--u)); }
+  .ap-intro__media { position: absolute; left: calc(773 * var(--u)); top: 0; width: calc(429 * var(--u)); height: calc(722 * var(--u)); }
+  .ap-intro__media img { height: 100%; object-fit: cover; -webkit-mask-image: none; mask-image: none; }
+
+  .ap-story { display: block; height: calc(651 * var(--u)); padding: 0; }
+  .ap-story__title { position: absolute; left: calc(181 * var(--u)); top: calc(118 * var(--u)); font-size: calc(86 * var(--u)); letter-spacing: -.005em; }
+  .ap-story__text {
+    position: absolute; left: calc(492 * var(--u)); top: calc(262 * var(--u)); width: calc(748 * var(--u));
+    gap: calc(21 * var(--u)); font-size: calc(12.7 * var(--u)); line-height: calc(20.8 * var(--u));
+  }
+
+  .ap-why { padding: calc(105 * var(--u)) calc(96 * var(--u)) 0; }
+  .ap-why__title { margin-top: calc(20 * var(--u)); font-size: calc(29 * var(--u)); }
+  .ap-why__text { margin-top: calc(4 * var(--u)); max-width: calc(500 * var(--u)); font-size: calc(12.7 * var(--u)); line-height: calc(18 * var(--u)); }
+  .ap-why__cards {
+    grid-template-columns: repeat(auto-fit, calc(213 * var(--u))); justify-content: center;
+    gap: calc(40 * var(--u)); margin-top: calc(84 * var(--u));
+  }
+  .ap-card { min-height: calc(170 * var(--u)); gap: calc(20 * var(--u)); padding: calc(26 * var(--u)) calc(16 * var(--u)) calc(24 * var(--u)); border-radius: calc(18 * var(--u)); }
+  .ap-card h3 { font-size: calc(13.4 * var(--u)); line-height: calc(20 * var(--u)); }
+  .ap-card p { font-size: calc(12.6 * var(--u)); line-height: calc(20 * var(--u)); }
+  .about-page .reservation { padding: 0; }
+}
+
+/* About page hover: cards lift with a gold edge, fork photo eases in */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .ap-card { transition: translate .45s var(--ease-spring, ease), border-color .35s ease, box-shadow .45s ease, background-color .35s ease; }
+  .ap-card:hover { translate: 0 -8px; border-color: rgba(231, 175, 39, .7); background: #222; box-shadow: 0 18px 40px -16px rgba(231, 175, 39, .45); }
+  .ap-card h3 { transition: color .3s ease; }
+  .ap-card:hover h3 { color: var(--gold); }
+  .ap-intro__media img { transition: scale 1.4s var(--ease-out, ease); }
+  .ap-intro__media:hover img { scale: 1.04; }
+}
+
 /* Contact page motion: title rises in on load, checkmark draws itself */
 @media (prefers-reduced-motion: no-preference) {
   .intro .page-hero > * { animation: introRise 1s var(--ease-out, ease) both; }

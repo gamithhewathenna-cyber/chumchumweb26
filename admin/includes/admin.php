@@ -462,7 +462,7 @@ function settings_form_render(array $fields, array $current, string $title, stri
             echo field_text('s[' . $key . ']', $label, $current[$key] ?? '', [
                 'type' => $type === 'link' ? 'text' : $type,
                 'help' => $help,
-                'rows' => $type === 'textarea' && strlen((string) ($current[$key] ?? '')) > 200 ? 6 : 3,
+                'rows' => $type === 'textarea' ? (int) min(14, max(3, ceil(strlen((string) ($current[$key] ?? '')) / 95) + 1)) : 3,
             ]);
         }
     }
@@ -479,6 +479,7 @@ function admin_nav(): array
     return [
         'index'    => ['Dashboard',       'M3 12l9-8 9 8M5 10v10h5v-6h4v6h5V10'],
         'home'     => ['Home Page',       'M4 5h16v14H4zM4 9h16M8 13h8M8 16h5'],
+        'about-page' => ['About Page',    'M12 8h.01M11 12h1v5h1M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z'],
         'messages' => ['Contact Page',    'M4 6h16v12H4zM4 7l8 6 8-6'],
         'settings' => ['Site Settings',   'M4 6h16M4 12h16M4 18h10'],
         'account'  => ['Account & Users', 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0'],
@@ -507,6 +508,50 @@ function home_tabs(string $active): void
         echo '<a href="', e($url), '"', $key === $active ? ' aria-current="page"' : '', '>', e($label), '</a>';
     }
     echo '</nav>';
+}
+
+/** About Page sections, in the order they appear on the page: key => [label, url]. */
+function about_sections(): array
+{
+    return [
+        'header' => ['Title & Banner',       'about-page.php?section=header'],
+        'intro'  => ['Intro',                'about-page.php?section=intro'],
+        'story'  => ['Our Story',            'about-page.php?section=story'],
+        'why'    => ['Why Choose Us',        'about-page.php?section=why'],
+        'cards'  => ['Why Choose Us Cards',  'about-features.php'],
+        'more'   => ['Reservation & SEO',    'about-page.php?section=more'],
+    ];
+}
+
+function about_tabs(string $active): void
+{
+    echo '<nav class="tabs" aria-label="About page sections">';
+    foreach (about_sections() as $key => [$label, $url]) {
+        echo '<a href="', e($url), '"', $key === $active ? ' aria-current="page"' : '', '>', e($label), '</a>';
+    }
+    echo '</nav>';
+}
+
+/** "Why Choose" cards table — created automatically on first use. */
+function ensure_about_features_table(PDO $pdo): void
+{
+    if ($pdo->query("SHOW TABLES LIKE 'about_features'")->fetch()) {
+        return;
+    }
+    $defaults = get_about_features(); // table missing → the built-in default cards
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `about_features` (
+        `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `title`      VARCHAR(100) NOT NULL,
+        `text`       VARCHAR(400) NOT NULL DEFAULT '',
+        `sort_order` INT NOT NULL DEFAULT 0,
+        `is_active`  TINYINT(1) NOT NULL DEFAULT 1,
+        PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    // Just created: copy in the default cards so the admin starts with what the website showed
+    $st = $pdo->prepare('INSERT INTO about_features (title, text, sort_order) VALUES (?, ?, ?)');
+    foreach ($defaults as $i => $f) {
+        $st->execute([$f['title'], $f['text'], $i + 1]);
+    }
 }
 
 /** Contact Page tabs. */

@@ -38,6 +38,22 @@ function default_settings(): array
         'maintenance_mode'    => '0',
         'maintenance_title'   => "We'll Be Back Soon",
         'maintenance_message' => "Our website is getting a fresh new look. We're still serving delicious Sri Lankan food — give us a call or drop us an email in the meantime.",
+        // About page
+        'aboutpage_title'            => 'About Us',
+        'aboutpage_intro'            => 'Lorem Ipsum Dolor Sit Amet Consectetur. Adipiscing Potenti Sit Risus Mattis Placerat Risus. Gravida Ac Duis Sed Placerat. Vel Dictumst In Cras Viverra Pretium Massa.',
+        'aboutpage_banner'           => 'about-banner.jpg',
+        'aboutpage_intro_badge'      => 'About Chumchums',
+        'aboutpage_intro_title'      => "A Taste Of Sri Lanka,\nReimagined For Melbourne",
+        'aboutpage_intro_text'       => "At Chum Chums, We Bring The Vibrant Flavours, Aromas, And Warmth Of Sri Lankan Cuisine To The Heart Of Clayton, Melbourne.\n\nBorn From A Passion For Authentic Sri Lankan Food And A Love For Bringing People Together, Chum Chums Was Created With One Simple Idea — To Give Melbourne A Fresh And Modern Way To Experience The Flavours Of Sri Lanka.\n\nFrom Traditional Favourites To Creative Fusion Dishes, Our Menu Celebrates The Rich Culinary Heritage Of Sri Lanka While Adding Our Own Modern Touch. Every Dish Is Prepared With Carefully Selected Ingredients, Bold Spices, And Plenty Of Passion.",
+        'aboutpage_intro_image'      => 'about-fork.jpg',
+        'aboutpage_story_title'      => 'Our Story.',
+        'aboutpage_story_text'       => "Lorem Ipsum Dolor Sit Amet Consectetur. Magna Ullamcorper Bibendum Sodales Eu Egestas Quis Suspendisse Non. Nibh Tincidunt Sit Metus Nulla Interdum Cursus. Lorem Eget Sed Amet Dignissim In. Neque Facilisi Metus Diam Eu Eleifend Libero. Viverra Adipiscing Purus Leo Congue Etiam Eget Nisl. Nec Tristique Amet Fames Morbi Duis Diam Maecenas A Consequat. Risus Eros Malesuada Faucibus Velit Ante Varius.\n\nNunc Et Neque Convallis Ac Lacus. Velit Aenean A Venenatis Mattis Lorem Urna Viverra Convallis Sed. Quisque Parturient Ac Pellentesque Dictum Imperdiet Mauris Proin Lectus. Placerat At Sit Sit Praesent Ultricies Ut Neque Molestie. Viverra Tellus Neque Diam A Semper. Penatibus Eget Pellentesque Arcu Nisi Parturient Amet. Ut Euismod Ut Condimentum Risus Luctus.\n\nSit Varius Sit Consectetur At Nisi Risus Dolor Ut Fermentum. Non Sed Orci Arcu Pretium Ultrices Ullamcorper. Dictumst Euismod Id Suspendisse Pellentesque Nunc Ultrices. Habitant Aenean Faucibus Egestas Tortor. Gravida Bibendum Leo Viverra Feugiat Tortor Adipiscing. Turpis Fames Quam Feugiat Et Ut. Eget Imperdiet Mi Cum Ullamcorper. Volutpat Maecenas Cras Fermentum Molestie Sit Cras. Venenatis Congue Aliquam Nibh Id Et Tellus.",
+        'aboutpage_story_image'      => 'about-story.jpg',
+        'aboutpage_why_badge'        => 'Modern Flavours. Sri Lankan Roots.',
+        'aboutpage_why_title'        => 'Why Choose Chumchums?',
+        'aboutpage_why_text'         => 'Lorem Ipsum Dolor Sit Amet Consectetur. Adipiscing Potenti Sit Risus Mattis Placerat Risus. Gravida Ac Duis Sed Placerat.',
+        'aboutpage_show_reservation' => '1',
+        'aboutpage_meta_description' => "Chum Chum's brings the vibrant flavours of Sri Lankan cuisine to Clayton, Melbourne — traditional favourites and modern fusion dishes, made fresh with bold spices.",
         // Contact page
         'contact_title'            => 'Contact Us',
         'contact_intro'            => 'Lorem Ipsum Dolor Sit Amet Consectetur. Adipiscing Potenti Sit Risus Mattis Placerat Risus. Gravida Ac Duis Sed Placerat. Vel Dictumst In Cras Viverra Pretium Massa.',
@@ -92,7 +108,7 @@ function get_navigation(): array
 {
     return [
         ['label' => 'Home',       'url' => 'index.php'],
-        ['label' => 'About Us',   'url' => '#about'],
+        ['label' => 'About Us',   'url' => 'about.php'],
         ['label' => 'Gallery',    'url' => '#gallery'],
         ['label' => 'Contact Us', 'url' => 'contact.php'],
     ];
@@ -106,6 +122,33 @@ function get_footer_links(): array
         ['label' => 'Gallery',    'url' => '#gallery'],
         ['label' => 'Contact us', 'url' => 'contact.php'],
     ];
+}
+
+/** "Why Choose" cards on the About page. */
+function get_about_features(): array
+{
+    return fetch_or_default(
+        'SELECT title, text FROM about_features WHERE is_active = 1 ORDER BY sort_order, id',
+        [
+            ['title' => 'Authentic Sri Lankan Inspiration', 'text' => 'Experience The Bold Spices, Textures, And Flavours Inspired By Sri Lanka.'],
+            ['title' => 'Modern Fusion Cuisine',            'text' => 'Traditional Favourites Meet Creative Ideas To Create Something Uniquely Chum Chums.'],
+            ['title' => 'Freshly Prepared',                 'text' => 'We Focus On Quality Ingredients And Freshly Prepared Dishes For Every Customer.'],
+            ['title' => 'Made For Sharing',                 'text' => "Our Food Is Meant To Bring People - Whether It's A Family Feast Or A Casual Meal With Friends."],
+            ['title' => 'Dine-In & Takeaway',               'text' => 'Enjoy Your Favourite Dishes At Our Clayton Restaurant Or Take Them With You.'],
+        ]
+    );
+}
+
+/** Turn text with blank lines between paragraphs into escaped <p> elements. */
+function text_paragraphs(string $text, string $attrs = ''): string
+{
+    $html = '';
+    foreach (preg_split('~\R\s*\R~', trim($text)) as $para) {
+        if (trim($para) !== '') {
+            $html .= '<p' . $attrs . '>' . nl2br(e(trim($para)), false) . '</p>';
+        }
+    }
+    return $html;
 }
 
 /**

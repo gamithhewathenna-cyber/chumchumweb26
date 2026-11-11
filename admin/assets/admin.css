@@ -260,3 +260,12 @@ body.auth { min-height: 100vh; display: grid; place-items: center; padding: 24px
 .message__meta dt { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 .message__meta dd { margin: 2px 0 0; font-weight: 500; }
 .message__body { padding: 18px 20px; background: #faf8f2; border-radius: 10px; line-height: 1.6; white-space: normal; overflow-wrap: anywhere; }
+
+/* ---------- About page cards ---------- */
+.feature-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.feature-card { display: grid; align-content: start; gap: 8px; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.feature-card.is-muted { opacity: .6; }
+.feature-card h2 { font-size: 15.5px; margin: 0; }
+.feature-card p { margin: 0 0 6px; color: var(--muted); font-size: 14px; line-height: 1.45; }
+.feature-card__actions { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; }
+.btn:disabled { opacity: .35; cursor: not-allowed; }
