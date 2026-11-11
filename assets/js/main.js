@@ -43,6 +43,47 @@
     });
   }
 
+  /* ---------- Motion: intro, scroll reveals, mouse parallax ---------- */
+  window.ccReady = true;
+  var root = document.documentElement;
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // End the page-load intro once its animations have finished
+  setTimeout(function () { root.classList.remove('intro'); }, 2600);
+
+  // Reveal sections as they scroll into view
+  var revealEls = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
+  if (calm || !('IntersectionObserver' in window)) {
+    revealEls.forEach(function (el) { el.classList.add('is-in'); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) { entry.target.classList.add('is-in'); io.unobserve(entry.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    revealEls.forEach(function (el) { io.observe(el); });
+  }
+
+  // The hero dish and pills drift slightly with the mouse (desktop only)
+  var heroEl = document.querySelector('.hero');
+  if (heroEl && !calm && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    var frame = null, mx = 0, my = 0;
+    heroEl.addEventListener('mousemove', function (e) {
+      var r = heroEl.getBoundingClientRect();
+      mx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+      my = ((e.clientY - r.top) / r.height - 0.5) * 2;
+      if (!frame) frame = requestAnimationFrame(function () {
+        heroEl.style.setProperty('--mx', mx.toFixed(3));
+        heroEl.style.setProperty('--my', my.toFixed(3));
+        frame = null;
+      });
+    });
+    heroEl.addEventListener('mouseleave', function () {
+      heroEl.style.setProperty('--mx', 0);
+      heroEl.style.setProperty('--my', 0);
+    });
+  }
+
   /* ---------- Hero dish slider ---------- */
   var hero = document.querySelector('.hero');
   var heroSlides = hero ? Array.prototype.slice.call(hero.querySelectorAll('.hero__slide')) : [];

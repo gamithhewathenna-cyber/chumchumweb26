@@ -21,6 +21,11 @@ $current         = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
 <link rel="preload" href="<?= e(asset('fonts/dm-sans-latin-opsz-normal.woff2')) ?>" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="<?= e(img_url($heroPreload ?? $s['hero_image'])) ?>" as="image">
 <link rel="stylesheet" href="<?= e(asset('css/style.css')) ?>">
+<script>
+  /* Turn on load + scroll animations before first paint. If main.js never runs, show everything after 3s. */
+  document.documentElement.classList.add('js', 'intro');
+  setTimeout(function () { if (!window.ccReady) document.documentElement.classList.remove('js', 'intro'); }, 3000);
+</script>
 </head>
 <body>
 <?php if ($maintenanceBypass): ?>

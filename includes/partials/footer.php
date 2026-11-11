@@ -1,7 +1,7 @@
 <?php /** @var array $s */ ?>
 <footer class="site-footer" id="contact">
   <div class="site-footer__inner">
-    <div class="site-footer__brand">
+    <div class="site-footer__brand" data-reveal>
       <a href="<?= e(base_url('index.php')) ?>" class="site-footer__logo" aria-label="<?= e($s['site_name']) ?> — Home">
         <img src="<?= e(asset('img/logo.png')) ?>" alt="<?= e($s['site_name']) ?>" width="204" height="159" loading="lazy">
       </a>
@@ -9,7 +9,7 @@
       <p><?= e($s['footer_text_2']) ?></p>
     </div>
 
-    <div class="site-footer__col site-footer__links">
+    <div class="site-footer__col site-footer__links" data-reveal style="--d:1">
       <h2>Link</h2>
       <ul>
         <?php foreach (get_footer_links() as $link): ?>
@@ -18,7 +18,7 @@
       </ul>
     </div>
 
-    <div class="site-footer__col site-footer__contact">
+    <div class="site-footer__col site-footer__contact" data-reveal style="--d:2">
       <h2>Connect us</h2>
       <address>
         <span><?= e($s['address_line1']) ?><br><?= e($s['address_line2']) ?></span>

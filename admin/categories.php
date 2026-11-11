@@ -170,7 +170,7 @@ admin_page_start('Home Page', 'home');
 home_tabs('categories');
 ?>
   <div class="toolbar">
-    <p class="muted">The dish slider at the top of the home page. Each slide has a pill button beside it — clicking the pill shows that slide. The design fits three pills on each side.</p>
+    <p class="muted">The dish slider at the top of the home page. Each slide has a pill button beside it — clicking the pill shows that slide. The design fits up to four pills on each side on desktop (three looks best).</p>
     <a class="btn btn--primary" href="categories.php?action=new">+ Add slide</a>
   </div>
 

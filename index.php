@@ -24,10 +24,10 @@ function discover_btn(string $url, string $label = 'Discover More'): string
 }
 
 /** Category pill — a button that switches the hero slider to that dish. */
-function category_pill(array $cat, int $index, bool $active): string
+function category_pill(array $cat, int $index, bool $active, int $order = 0): string
 {
     return '<li><button class="cat-pill' . ($active ? ' is-active' : '') . '" type="button" data-slide="' . $index . '"'
-        . ' aria-controls="hero-slide-' . $index . '" aria-pressed="' . ($active ? 'true' : 'false') . '">'
+        . ' aria-controls="hero-slide-' . $index . '" aria-pressed="' . ($active ? 'true' : 'false') . '" style="--i:' . $order . '">'
         . '<img src="' . e(img_url($cat['thumbnail'])) . '" alt="" width="60" height="37">' . e($cat['name']) . '</button></li>';
 }
 ?>
@@ -59,6 +59,7 @@ function category_pill(array $cat, int $index, bool $active): string
             <?php if ($slide['subtitle'] !== ''): ?><p class="hero__subtitle"><?= e($slide['subtitle']) ?></p><?php endif; ?>
           </div>
           <div class="hero__dish">
+            <span class="hero__steam" aria-hidden="true"><i></i><i></i><i></i></span>
             <img src="<?= e(img_url($slide['image'])) ?>" alt="<?= e(trim($slide['title'] . ' ' . $slide['subtitle'])) ?>"
                  width="1215" height="747"<?= $active ? ' fetchpriority="high"' : ' decoding="async"' ?>>
           </div>
@@ -69,10 +70,10 @@ function category_pill(array $cat, int $index, bool $active): string
     <?php if (count($categories) > 0): ?>
     <div class="hero__cats-wrap">
       <ul class="hero__cats hero__cats--left" aria-label="Choose a dish">
-        <?php foreach ($leftCats as $n => $cat) echo category_pill($cat, $n, $n === $heroStart); ?>
+        <?php foreach ($leftCats as $n => $cat) echo category_pill($cat, $n, $n === $heroStart, $n); ?>
       </ul>
       <ul class="hero__cats hero__cats--right" aria-label="Choose a dish">
-        <?php foreach ($rightCats as $n => $cat) { $idx = count($leftCats) + $n; echo category_pill($cat, $idx, $idx === $heroStart); } ?>
+        <?php foreach ($rightCats as $n => $cat) { $idx = count($leftCats) + $n; echo category_pill($cat, $idx, $idx === $heroStart, $n); } ?>
       </ul>
     </div>
     <?php endif; ?>
@@ -80,15 +81,15 @@ function category_pill(array $cat, int $index, bool $active): string
 
   <!-- ============ ABOUT ============ -->
   <section class="about" id="about" aria-labelledby="about-title">
-    <div class="about__media">
+    <div class="about__media" data-reveal="wipe">
       <img src="<?= e(img_url($s['about_image'])) ?>" alt="Chef plating a dish at Chum Chum's" width="931" height="1330" loading="lazy">
     </div>
     <div class="about__content">
-      <span class="tag tag--gold"><?= e($s['about_badge']) ?></span>
-      <h2 class="about__title" id="about-title"><?= e($s['about_title']) ?></h2>
-      <p class="about__text"><?= e($s['about_text']) ?></p>
+      <span class="tag tag--gold" data-reveal style="--d:1"><?= e($s['about_badge']) ?></span>
+      <h2 class="about__title" id="about-title" data-reveal style="--d:2"><?= e($s['about_title']) ?></h2>
+      <p class="about__text" data-reveal style="--d:3"><?= e($s['about_text']) ?></p>
 
-      <div class="about__visit">
+      <div class="about__visit" data-reveal="zoom" style="--d:4">
         <img class="about__interior" src="<?= e(img_url($s['interior_image'])) ?>" alt="Inside the Chum Chum's restaurant" width="560" height="552" loading="lazy">
         <div class="hours-card">
           <h3><?= e($s['hours_title']) ?></h3>
@@ -106,7 +107,7 @@ function category_pill(array $cat, int $index, bool $active): string
   <section class="showcase" id="gallery" aria-label="Featured dishes">
     <?php foreach ($showcase as $slot => $item): ?>
       <?php if ($slot === 1): ?>
-        <article class="showcase__item showcase__item--feature">
+        <article class="showcase__item showcase__item--feature" data-reveal="zoom">
           <img src="<?= e(img_url($item['image'])) ?>" alt="<?= e($item['title']) ?>" loading="lazy" width="811" height="934">
           <div class="showcase__feature-body">
             <h3><?= e($item['title']) ?></h3>
@@ -115,13 +116,13 @@ function category_pill(array $cat, int $index, bool $active): string
           </div>
         </article>
       <?php elseif (in_array($slot, [2, 4, 6], true)): ?>
-        <article class="showcase__item showcase__item--text showcase__item--s<?= $slot ?>">
+        <article class="showcase__item showcase__item--text showcase__item--s<?= $slot ?>" data-reveal style="--d:<?= $slot - 1 ?>">
           <h3><?= e($item['title']) ?></h3>
           <p><?= e($item['description']) ?></p>
           <?= discover_btn($item['link_url'] ?: '#menu') ?>
         </article>
       <?php else: ?>
-        <figure class="showcase__item showcase__item--image showcase__item--s<?= $slot ?>">
+        <figure class="showcase__item showcase__item--image showcase__item--s<?= $slot ?>" data-reveal="zoom" style="--d:<?= $slot - 1 ?>">
           <img src="<?= e(img_url($item['image'])) ?>" alt="<?= e($item['title']) ?>" loading="lazy" width="535" height="467">
         </figure>
       <?php endif; ?>
@@ -130,7 +131,7 @@ function category_pill(array $cat, int $index, bool $active): string
 
   <!-- ============ RESERVATION ============ -->
   <section class="reservation" id="reservation" aria-labelledby="reservation-title">
-    <div class="reservation__box">
+    <div class="reservation__box" data-reveal="zoom">
       <div class="reservation__media">
         <img src="<?= e(img_url($s['reservation_image'])) ?>" alt="Guest enjoying a meal at Chum Chum's" width="1066" height="614" loading="lazy">
       </div>
@@ -148,7 +149,7 @@ function category_pill(array $cat, int $index, bool $active): string
   <!-- ============ TESTIMONIALS ============ -->
   <?php if ($testimonials): ?>
   <section class="testimonials" aria-label="What our guests say">
-    <div class="testimonials__stage">
+    <div class="testimonials__stage" data-reveal>
       <img class="testimonials__brush" src="<?= e(asset('img/testimonial-brush.jpg')) ?>" alt="" width="1560" height="485" loading="lazy">
       <div class="testimonials__viewport" aria-live="polite">
         <?php foreach ($testimonials as $i => $t): ?>
