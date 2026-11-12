@@ -57,6 +57,18 @@ if (is_post()) {
         $pdo->prepare('UPDATE contact_messages SET is_read = 1 WHERE id = ?')->execute([$id]);
         redirect($back);
     }
+    if ($op === 'resend' && ($m = find_message($pdo, $id))) {
+        // Email this message again with the current Email (SMTP) settings
+        $result = send_contact_notification($m, array_merge(get_settings(), ['contact_notify_enabled' => '1']));
+        record_email_status($pdo, $id, $result);
+        if ($result && $result['ok']) {
+            flash('success', 'Email sent to ' . implode(', ', $result['accepted']) . '.');
+        } else {
+            flash('error', 'Email could not be sent: ' . ($result['error'] ?? 'unknown error') . ' — check Site Settings → Email (SMTP).');
+        }
+        redirect('messages.php?view=' . $id);
+    }
+
     if ($op === 'read_all') {
         $n = $pdo->exec('UPDATE contact_messages SET is_read = 1 WHERE is_read = 0');
         flash('success', $n ? $n . ' message' . ($n === 1 ? '' : 's') . ' marked as read.' : 'Nothing to mark.');
@@ -109,6 +121,19 @@ if ($viewId) {
       <dl class="message__meta">
         <div><dt>Email</dt><dd><a href="mailto:<?= e($m['email']) ?>"><?= e($m['email']) ?></a></dd></div>
         <div><dt>Phone</dt><dd><?= $m['phone'] !== '' ? '<a href="' . e(tel_link($m['phone'])) . '">' . e($m['phone']) . '</a>' : '<span class="muted">—</span>' ?></dd></div>
+        <div><dt>Email notification</dt><dd>
+          <?php $st = (string) ($m['email_status'] ?? ''); ?>
+          <?php if ($st === 'sent'): ?><span class="badge badge--on">✓ Sent</span>
+          <?php elseif ($st === 'failed'): ?><span class="badge badge--bad">✗ Failed</span> <span class="muted small"><?= e($m['email_error'] ?? '') ?></span>
+          <?php elseif ($st === 'off'): ?><span class="badge">Notifications off</span>
+          <?php else: ?><span class="muted">—</span><?php endif; ?>
+          <?php if ($st !== 'sent'): ?>
+            <form method="post" class="inline-form">
+              <?= csrf_field() ?><input type="hidden" name="op" value="resend"><input type="hidden" name="id" value="<?= (int) $m['id'] ?>">
+              <button class="btn btn--small" type="submit">Resend email</button>
+            </form>
+          <?php endif; ?>
+        </dd></div>
       </dl>
       <div class="message__body"><?= nl2br(e($m['message'])) ?></div>
     </article>
@@ -157,7 +182,7 @@ contact_tabs('messages');
             <span class="muted small"><?= e($m['email']) ?><?= $m['phone'] !== '' ? ' · ' . e($m['phone']) : '' ?></span>
           </span>
           <span class="inbox__snippet"><?= e(mb_strimwidth(preg_replace('~\s+~', ' ', $m['message']), 0, 140, '…')) ?></span>
-          <span class="inbox__when muted small"><?= e(message_when($m['created_at'])) ?><?= $m['is_read'] ? '' : '<span class="sr-only"> (unread)</span>' ?></span>
+          <span class="inbox__when muted small"><?= ($m['email_status'] ?? '') === 'failed' ? '<span class="badge badge--bad" title="The email notification failed">✉ ✗</span> ' : '' ?><?= e(message_when($m['created_at'])) ?><?= $m['is_read'] ? '' : '<span class="sr-only"> (unread)</span>' ?></span>
         </a>
       <?php endforeach; ?>
     </div>

@@ -626,9 +626,29 @@ function golive_checks(PDO $pdo): array
     $noPhoto = $count("SELECT COUNT(*) FROM menu_categories WHERE is_active = 1 AND hero_image = ''");
     $checks[] = [$noPhoto <= 0, 'Every hero slide has its own photo', $noPhoto > 0 ? $noPhoto . ' slide(s) still show the default plate photo.' : 'Done.', 'categories.php'];
     $checks[] = [trim((string) ($s['menu_html'] ?? '')) !== '', 'Menu is added', 'Paste your menu in Menu Page → Menu Code.', 'menu-page.php'];
+    $smtpOk = ($s['smtp_enabled'] ?? '0') === '1' && trim((string) ($s['smtp_host'] ?? '')) !== '' && filter_var($s['smtp_to_email'] ?? '', FILTER_VALIDATE_EMAIL);
+    $checks[] = [$smtpOk, 'Contact-form emails are set up (SMTP)', 'Enter your mailbox SMTP details and send a test email, so contact-form messages reach your inbox.', 'email-settings.php'];
     $admins = $count('SELECT COUNT(*) FROM admin_users');
     $checks[] = [$admins >= 1, 'Admin account exists', '', 'account.php'];
     return $checks;
+}
+
+/** Site Settings tabs (the Email tab has its own page). */
+function settings_tabs_nav(string $active): void
+{
+    $tabs = [
+        'general'     => ['General & Contact', 'settings.php?tab=general'],
+        'links'       => ['Links',             'settings.php?tab=links'],
+        'footer'      => ['Footer',            'settings.php?tab=footer'],
+        'seo'         => ['Search (SEO)',      'settings.php?tab=seo'],
+        'maintenance' => ['Maintenance Mode',  'settings.php?tab=maintenance'],
+        'email'       => ['Email (SMTP)',      'email-settings.php'],
+    ];
+    echo '<nav class="tabs" aria-label="Settings sections">';
+    foreach ($tabs as $key => [$label, $url]) {
+        echo '<a href="', e($url), '"', $key === $active ? ' aria-current="page"' : '', '>', e($label), '</a>';
+    }
+    echo '</nav>';
 }
 
 /** Gallery Page tabs. */

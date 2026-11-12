@@ -57,11 +57,7 @@ $current = settings_form_handle($pdo, $fields, 'settings.php?tab=' . $tab, $succ
 
 admin_page_start('Site Settings', 'settings');
 ?>
-  <nav class="tabs" aria-label="Settings sections">
-    <?php foreach ($sections as $key => [$label]): ?>
-      <a href="settings.php?tab=<?= e($key) ?>"<?= $key === $tab ? ' aria-current="page"' : '' ?>><?= e($label) ?></a>
-    <?php endforeach; ?>
-  </nav>
+  <?php settings_tabs_nav($tab); ?>
 <?php
 settings_form_render($fields, $current, $tabLabel, $tab === 'maintenance'
     ? '<a class="btn btn--ghost" href="' . e(base_url('index.php?preview_maintenance=1')) . '" target="_blank" rel="noopener">Preview page ↗</a>'

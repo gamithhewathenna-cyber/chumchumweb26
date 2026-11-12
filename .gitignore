@@ -1,5 +1,7 @@
 # Real settings with the database password — never commit (see config/config.example.php)
 config/config.php
+# Encryption key for the saved SMTP password
+config/secret.key
 
 # Uploaded content lives on the server, not in git
 assets/img/uploads/*

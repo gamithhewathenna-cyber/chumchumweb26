@@ -44,6 +44,7 @@ $contactCards = [
 ];
 $cards = [
     ['settings.php', 'Site Settings',   'Phone, email, address, links, footer, SEO and maintenance mode.', null],
+    ['email-settings.php', 'Email (SMTP)', 'Where contact-form emails are sent, the mail server settings, and a test email.', (get_settings()['smtp_enabled'] ?? '0') === '1' ? 'SMTP on' : 'Not set up'],
     ['account.php',  'Account & Users', 'Change your password and manage admin users.', null],
 ];
 

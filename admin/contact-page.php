@@ -17,8 +17,7 @@ $sections = [
     ]],
     'form' => ['Form & notifications', [
         'contact_success'        => ['Thank-you message', 'textarea', 'Shown after someone sends a message.'],
-        'contact_notify_enabled' => ['Email me when a new message arrives', 'checkbox', 'Every message is also saved under Messages, even if emails are off.'],
-        'contact_notify_email'   => ['Send notifications to', 'email', 'Leave empty to use the restaurant email from Site Settings.'],
+        'contact_notify_enabled' => ['Email me when a new message arrives', 'checkbox', 'Messages are emailed to the Recipient + CC addresses set in Site Settings → Email (SMTP). Every message is also saved under Messages, even if emails are off.'],
     ]],
     'seo' => ['Search (SEO)', [
         'contact_meta_description' => ['Meta description', 'textarea', 'Shown under the page title in Google results. Aim for 120–160 characters.'],

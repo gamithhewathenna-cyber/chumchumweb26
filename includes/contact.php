@@ -26,11 +26,19 @@ function ensure_contact_table(PDO $pdo): void
         `ip`         VARCHAR(45)  NOT NULL DEFAULT '',
         `user_agent` VARCHAR(255) NOT NULL DEFAULT '',
         `is_read`    TINYINT(1)   NOT NULL DEFAULT 0,
+        `email_status` VARCHAR(20)  NOT NULL DEFAULT '',
+        `email_error`  VARCHAR(255) NOT NULL DEFAULT '',
         `created_at` TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (`id`),
         KEY `idx_read_created` (`is_read`, `created_at`),
         KEY `idx_ip_created` (`ip`, `created_at`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    // Added later: did the notification email go out? (sent / failed / off)
+    if (!$pdo->query("SHOW COLUMNS FROM `contact_messages` LIKE 'email_status'")->fetch()) {
+        $pdo->exec("ALTER TABLE `contact_messages`
+            ADD COLUMN `email_status` VARCHAR(20)  NOT NULL DEFAULT '' AFTER `is_read`,
+            ADD COLUMN `email_error`  VARCHAR(255) NOT NULL DEFAULT '' AFTER `email_status`");
+    }
 }
 
 function contact_secret(): string
@@ -116,46 +124,70 @@ function handle_contact_submission(array $s): array
         $pdo->prepare('INSERT INTO contact_messages (first_name, last_name, phone, email, message, ip, user_agent) VALUES (?, ?, ?, ?, ?, ?, ?)')
             ->execute([$values['first_name'], $values['last_name'], $values['phone'], $values['email'], $values['message'],
                        $ip, mb_substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 255)]);
+        $messageId = (int) $pdo->lastInsertId();
     } catch (Throwable $ex) {
         error_log('[ChumChums] contact form: ' . $ex->getMessage());
         return ['ok' => false, 'values' => $values, 'spam' => false,
                 'errors' => ['form' => 'Sorry, we could not send your message right now. Please call or email us instead.']];
     }
 
-    send_contact_notification($values, $s);
+    // The message is saved; now email it (the visitor sees "sent" either way — failures show in the admin inbox)
+    $result = send_contact_notification($values, $s);
+    record_email_status($pdo, $messageId, $result);
     return ['ok' => true, 'errors' => [], 'values' => [], 'spam' => false];
 }
 
-/** E-mail the restaurant about a new message (failures are logged; the message is already saved). */
-function send_contact_notification(array $v, array $s): void
+/** Remember whether the notification email went out, so the admin inbox can show it (and offer Resend). */
+function record_email_status(PDO $pdo, int $id, ?array $result): void
+{
+    $status = $result === null ? 'off' : ($result['ok'] ? 'sent' : 'failed');
+    $error  = $result === null ? '' : mb_substr((string) $result['error'], 0, 255);
+    try {
+        $pdo->prepare('UPDATE contact_messages SET email_status = ?, email_error = ? WHERE id = ?')->execute([$status, $error, $id]);
+    } catch (Throwable $ex) {
+        error_log('[ChumChums] contact form: could not record email status: ' . $ex->getMessage());
+    }
+}
+
+/**
+ * Email the restaurant about a contact-form message, using Admin → Site Settings → Email (SMTP).
+ * Goes to the recipient + CC addresses; Reply-To is the visitor, so "Reply" answers them directly.
+ * Returns the send result, or null when notifications are switched off.
+ */
+function send_contact_notification(array $v, array $s): ?array
 {
     if (($s['contact_notify_enabled'] ?? '1') !== '1') {
-        return;
+        return null;
     }
-    $to = trim((string) ($s['contact_notify_email'] ?? '')) ?: trim((string) ($s['email'] ?? ''));
-    if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
-        return;
-    }
-    $host = preg_replace('~^www\.~i', '', (string) ($_SERVER['HTTP_HOST'] ?? 'localhost'));
-    $host = preg_replace('~[^a-z0-9.-]~i', '', $host) ?: 'localhost';
-    $name = trim($v['first_name'] . ' ' . $v['last_name']);
-    $clean = fn(string $x) => str_replace(["\r", "\n"], ' ', $x); // no header injection
+    require_once __DIR__ . '/mailer.php';
+    $name  = trim($v['first_name'] . ' ' . $v['last_name']);
+    $phone = $v['phone'] !== '' ? $v['phone'] : '—';
+    $h     = fn($x) => htmlspecialchars((string) $x, ENT_QUOTES, 'UTF-8');
 
-    $subject = '=?UTF-8?B?' . base64_encode('New website message from ' . $name) . '?=';
-    $body = "You have a new message from the Chum Chum's website contact form.\n\n"
-        . "Name:   {$name}\n"
-        . "Email:  {$v['email']}\n"
-        . 'Phone:  ' . ($v['phone'] !== '' ? $v['phone'] : '—') . "\n\n"
+    $text = "You have a new message from the {$s['site_name']} website contact form.\n\n"
+        . "Name:   {$name}\nEmail:  {$v['email']}\nPhone:  {$phone}\n\n"
         . "Message:\n{$v['message']}\n\n"
         . "—\nReply to this email to answer them directly. All messages are also saved in the website admin under Contact Page → Messages.\n";
-    $headers = [
-        'From: ' . $clean("Chum Chum's Website <noreply@{$host}>"),
-        'Reply-To: ' . $clean($name !== '' ? "{$name} <{$v['email']}>" : $v['email']),
-        'MIME-Version: 1.0',
-        'Content-Type: text/plain; charset=UTF-8',
-        'X-Mailer: ChumChums-Website',
-    ];
-    if (!@mail($to, $subject, $body, implode("\r\n", $headers))) {
-        error_log('[ChumChums] contact form: notification email to ' . $to . ' could not be sent.');
+    $html = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#222;max-width:620px">'
+        . '<h2 style="margin:0 0 14px;color:#b9861a">New message from the website</h2>'
+        . '<table cellpadding="6" style="border-collapse:collapse;margin-bottom:16px">'
+        . '<tr><td style="color:#777">Name</td><td><strong>' . $h($name) . '</strong></td></tr>'
+        . '<tr><td style="color:#777">Email</td><td><a href="mailto:' . $h($v['email']) . '">' . $h($v['email']) . '</a></td></tr>'
+        . '<tr><td style="color:#777">Phone</td><td>' . ($v['phone'] !== '' ? '<a href="tel:' . $h(preg_replace('~[^0-9+]~', '', $v['phone'])) . '">' . $h($v['phone']) . '</a>' : '—') . '</td></tr>'
+        . '</table>'
+        . '<div style="padding:14px 16px;background:#f6f4ee;border-radius:8px;white-space:pre-wrap">' . nl2br($h($v['message'])) . '</div>'
+        . '<p style="color:#888;font-size:13px;margin-top:18px">Reply to this email to answer ' . $h($v['first_name']) . ' directly. '
+        . 'All messages are also saved in the website admin under Contact Page → Messages.</p></div>';
+
+    $result = site_mail([
+        'subject'    => 'New website message from ' . $name,
+        'text'       => $text,
+        'html'       => $html,
+        'reply_to'   => $v['email'],
+        'reply_name' => $name,
+    ]);
+    if (!$result['ok']) {
+        error_log('[ChumChums] contact form: notification email failed — ' . $result['error']);
     }
+    return $result;
 }

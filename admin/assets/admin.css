@@ -368,3 +368,19 @@ body.auth { min-height: 100vh; display: grid; place-items: center; padding: 24px
 .golive__item.is-ok .golive__mark { background: #e2f3ea; color: var(--success); }
 .golive__done { margin-top: 12px; }
 .golive__done summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+
+/* ---------- Email (SMTP) settings ---------- */
+.badge--bad { background: #fdecea; color: var(--danger); }
+.inline-form { display: inline; margin-left: 8px; }
+.field-row--3 { grid-template-columns: 2fr 1fr 1.4fr; }
+@media (max-width: 760px) { .field-row--3 { grid-template-columns: 1fr; } }
+.smtp-form__group { margin: 22px 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.smtp-form code, .test-result code { background: #f1eee6; padding: 1px 5px; border-radius: 4px; }
+.smtp-form__test { display: inline-flex; gap: 6px; align-items: center; }
+.smtp-form__test select { width: auto; padding: 8px 10px; font-size: 14px; }
+.test-result { border-left: 4px solid var(--success); }
+.test-result--fail { border-left-color: var(--danger); }
+.test-result__list { list-style: none; padding: 0; margin: 0 0 10px; display: grid; gap: 4px; }
+.test-result__list .is-bad { color: var(--danger); }
+.test-result__log summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+.test-result__log pre { max-height: 320px; overflow: auto; padding: 12px; background: #16171b; color: #d8d6cf; border-radius: 8px; font-size: 12px; line-height: 1.5; white-space: pre-wrap; }

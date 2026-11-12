@@ -67,6 +67,18 @@ function default_settings(): array
         'menu_css'              => '',
         'menu_empty_text'       => "Our full menu is coming soon. In the meantime, give us a call and we'll happily tell you what's cooking today.",
         'menu_meta_description' => "See the menu at Chum Chum's Sri Lankan Cuisine Restaurant in Clayton, Melbourne — kottu, rice & curry, biryani, seafood and modern fusion dishes.",
+        // Email (SMTP) — Admin → Site Settings → Email (SMTP)
+        'smtp_enabled'     => '0',
+        'smtp_host'        => '',
+        'smtp_port'        => '465',
+        'smtp_encryption'  => 'ssl',
+        'smtp_username'    => '',
+        'smtp_password'    => '',
+        'smtp_verify_cert' => '1',
+        'smtp_from_email'  => '',
+        'smtp_from_name'   => "Chum Chum's Website",
+        'smtp_to_email'    => '',
+        'smtp_cc'          => '',
         // Contact page
         'contact_title'            => 'Contact Us',
         'contact_intro'            => 'Lorem Ipsum Dolor Sit Amet Consectetur. Adipiscing Potenti Sit Risus Mattis Placerat Risus. Gravida Ac Duis Sed Placerat. Vel Dictumst In Cras Viverra Pretium Massa.',
