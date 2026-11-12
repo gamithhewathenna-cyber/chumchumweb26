@@ -6,6 +6,7 @@ $mMessage = trim((string) ($s['maintenance_message'] ?? ''));
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<?php require __DIR__ . '/gtm.php'; ?>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title><?= e($mTitle) ?> | <?= e($s['site_name']) ?></title>
