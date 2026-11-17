@@ -1241,3 +1241,45 @@ body.lightbox-open { overflow: hidden; }
   .local-copy p { font-size: calc(17 * var(--u)); }
   .local-areas--contact { margin: 0 calc(106 * var(--u)) calc(100 * var(--u)); padding: calc(64 * var(--u)) 0 0; }
 }
+
+/* ==========================================================================
+   Promotion popup (Admin → Popup Offers) — image 800 × 1000 (4:5)
+   ========================================================================== */
+.promo { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 16px; }
+.promo[hidden] { display: none; }
+.promo__backdrop {
+  position: absolute; inset: 0; background: rgba(0, 0, 0, .72); backdrop-filter: blur(4px);
+  opacity: 0; transition: opacity .35s ease;
+}
+.promo__dialog {
+  position: relative; width: min(800px, 100%, calc((100dvh - 32px) * .8));
+  opacity: 0; transform: translateY(18px) scale(.96);
+  transition: opacity .35s ease, transform .45s cubic-bezier(.2, .9, .3, 1.2);
+}
+.promo.is-open .promo__backdrop { opacity: 1; }
+.promo.is-open .promo__dialog { opacity: 1; transform: none; }
+.promo__dialog:focus { outline: none; }
+.promo__media {
+  display: block; aspect-ratio: 4 / 5; border-radius: 22px; overflow: hidden; background: #111;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .9), 0 0 0 1px rgba(231, 175, 39, .35);
+}
+.promo__media img { width: 100%; height: 100%; object-fit: cover; }
+a.promo__media img { transition: transform .6s ease; }
+a.promo__media:hover img { transform: scale(1.02); }
+.promo__close {
+  position: absolute; top: 12px; right: 12px; z-index: 2; display: grid; place-items: center;
+  width: 42px; height: 42px; border-radius: 50%; background: rgba(0, 0, 0, .65); color: var(--white);
+  border: 1px solid rgba(255, 255, 255, .35); transition: background-color .2s ease, transform .25s ease;
+}
+.promo__close:hover { background: var(--gold); transform: rotate(90deg); }
+.promo__close svg { width: 20px; height: 20px; }
+.promo__btn {
+  position: absolute; left: 50%; bottom: 22px; translate: -50% 0; z-index: 2;
+  display: inline-flex; align-items: center; justify-content: center; min-width: 200px; height: 48px; padding: 0 28px;
+  border-radius: 999px; background: var(--gold); color: var(--black); font-size: 16px; font-weight: 600; white-space: nowrap;
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, .8); transition: background-color .2s ease, translate .25s ease;
+}
+.promo__btn:hover { background: #f0bb35; translate: -50% -2px; }
+.promo__preview { margin-top: 10px; color: var(--gold); font-size: 13px; text-align: center; }
+html.promo-lock, html.promo-lock body { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { .promo__dialog { transform: none; } }

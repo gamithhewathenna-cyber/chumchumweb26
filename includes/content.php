@@ -79,6 +79,11 @@ function default_settings(): array
         'smtp_from_name'   => "Chum Chum's Website",
         'smtp_to_email'    => '',
         'smtp_cc'          => '',
+        // Promotion popup — Admin → Popup Offers
+        'popup_enabled'      => '1',
+        'popup_frequency'    => 'session',
+        'popup_delay'        => '2',
+        'popup_pages'        => 'all',
         // Local SEO pages (suburbs + dishes) — Admin → Local SEO
         'local_enabled'      => '1',
         'seo_lat'            => '-37.9196',

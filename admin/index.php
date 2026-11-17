@@ -45,6 +45,11 @@ $contactCards = [
 $cards = [
     ['settings.php', 'Site Settings',   'Phone, email, address, links, footer, SEO and maintenance mode.', null],
     ['email-settings.php', 'Email (SMTP)', 'Where contact-form emails are sent, the mail server settings, and a test email.', (get_settings()['smtp_enabled'] ?? '0') === '1' ? 'SMTP on' : 'Not set up'],
+    ['popups.php', 'Popup Offers', 'The promotion popup visitors see when they arrive — add, schedule and remove offers.', (function () {
+        try { ensure_popups_table(admin_db()); $n = (int) admin_db()->query("SELECT COUNT(*) FROM promo_popups WHERE is_active = 1 AND (starts_on IS NULL OR starts_on <= CURDATE()) AND (ends_on IS NULL OR ends_on >= CURDATE())")->fetchColumn(); }
+        catch (Throwable $ex) { $n = 0; }
+        return (get_settings()['popup_enabled'] ?? '1') !== '1' ? 'Off' : ($n ? $n . ' live' : 'None live');
+    })()],
     ['local-seo.php', 'Local SEO pages', 'Suburb pages ("Sri Lankan restaurant near Glen Waverley") and dish pages — add your own text and photos.', local_enabled(get_settings()) ? count(local_areas()) . ' suburbs + ' . count(local_dishes(get_settings())) . ' dishes' : 'Off'],
     ['account.php',  'Account & Users', 'Change your password and manage admin users.', null],
 ];

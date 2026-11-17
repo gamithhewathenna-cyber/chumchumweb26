@@ -42,6 +42,7 @@
   </div>
 </footer>
 
+<?php require __DIR__ . '/popup.php'; ?>
 <script src="<?= e(asset('js/main.js')) ?>" defer></script>
 </body>
 </html>

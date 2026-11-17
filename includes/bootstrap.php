@@ -164,3 +164,4 @@ require_once __DIR__ . '/icons.php';
 require_once __DIR__ . '/content.php';
 require_once __DIR__ . '/maintenance.php';
 require_once __DIR__ . '/local-seo.php';
+require_once __DIR__ . '/popup.php';

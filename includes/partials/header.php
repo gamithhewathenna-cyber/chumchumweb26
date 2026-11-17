@@ -1,6 +1,9 @@
 <?php
 /** @var array $s  site settings */
 $maintenanceBypass = maintenance_gate($s); // visitors stop here when maintenance mode is on
+if (isset($_GET['popup_preview'])) {
+    viewer_is_admin(); // check the admin login now, before any output (the popup preview needs it later)
+}
 $pageTitle      = $pageTitle ?? $s['meta_title'];
 $pageDescription = $pageDescription ?? $s['meta_description'];
 $nav             = get_navigation();

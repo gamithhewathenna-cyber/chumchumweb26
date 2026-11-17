@@ -8,6 +8,8 @@ assets/img/uploads/*
 !assets/img/uploads/.htaccess
 assets/img/gallery/*
 !assets/img/gallery/.htaccess
+assets/img/promo/*
+!assets/img/promo/.htaccess
 assets/img/menu/*
 !assets/img/menu/.htaccess
 

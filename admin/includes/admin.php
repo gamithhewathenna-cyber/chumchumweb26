@@ -488,6 +488,7 @@ function admin_nav(): array
         'menu-page' => ['Menu Page',      'M7 3v8m-2-8v4a2 2 0 0 0 4 0V3M7 11v10M16 3c-2 1-3 4-3 7h3v11'],
         'gallery-page' => ['Gallery Page', 'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9h.01'],
         'messages' => ['Contact Page',    'M4 6h16v12H4zM4 7l8 6 8-6'],
+        'popups'   => ['Popup Offers',    'M20 12v9H4v-9M2 7h20v5H2zM12 21V7M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z'],
         'local-seo' => ['Local SEO',      'M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z'],
         'settings' => ['Site Settings',   'M4 6h16M4 12h16M4 18h10'],
         'account'  => ['Account & Users', 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0'],
@@ -699,6 +700,12 @@ function menu_tabs(string $active): void
         echo '<a href="', e($url), '"', $key === $active ? ' aria-current="page"' : '', '>', e($label), '</a>';
     }
     echo '</nav>';
+}
+
+/** Popup Offers table — created the first time it's needed. */
+function ensure_popups_table(PDO $pdo): void
+{
+    $pdo->exec(popup_table_sql());
 }
 
 /** settings.setting_value was TEXT (64 KB) — a pasted menu needs more room. Upgrade once to MEDIUMTEXT (16 MB). */
