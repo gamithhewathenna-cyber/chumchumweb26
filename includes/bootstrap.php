@@ -82,7 +82,38 @@ function base_url(string $path = ''): string
             $base = rtrim($dir === '/' || $dir === '.' ? '' : $dir, '/');
         }
     }
-    return $base . '/' . ltrim($path, '/');
+    return $base . '/' . clean_page_path(ltrim($path, '/'));
+}
+
+/**
+ * True when the server rewrites clean addresses ("/about" → about.php). The site's
+ * .htaccess sets CLEAN_URLS for every request; without it we keep ".php" links so
+ * nothing breaks on servers that can't rewrite.
+ */
+function clean_urls_enabled(): bool
+{
+    static $on = null;
+    if ($on === null) {
+        $on = (getenv('CLEAN_URLS') ?: getenv('REDIRECT_CLEAN_URLS')
+            ?: ($_SERVER['CLEAN_URLS'] ?? $_SERVER['REDIRECT_CLEAN_URLS'] ?? '')) === '1';
+    }
+    return $on;
+}
+
+/**
+ * Search-friendly page addresses: "index.php" → "" (the homepage is "/"),
+ * "about.php?x=1#y" → "about?x=1#y". Only top-level public pages are changed
+ * (admin/… and other folders are left alone).
+ */
+function clean_page_path(string $path): string
+{
+    if (!clean_urls_enabled() || !preg_match('~^([a-z0-9-]+)\.php((?:[?#].*)?)$~i', $path, $m)) {
+        return $path;
+    }
+    if (strtolower($m[1]) === 'index') {
+        return $m[2];
+    }
+    return is_file(APP_ROOT . '/' . $m[1] . '.php') ? $m[1] . $m[2] : $path;
 }
 
 /** URL to a static asset with a cache-busting version. */

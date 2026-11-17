@@ -14,8 +14,38 @@ ErrorDocument 404 /404.php
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule ^ https://www.chumchums.com.au%{REQUEST_URI} [L,R=301]
 
+  # Tell PHP that clean addresses work here, so the site links to "/about", not "/about.php"
+  RewriteRule ^ - [E=CLEAN_URLS:1]
+
   # Sitemap for search engines, built live by sitemap.php
   RewriteRule ^sitemap\.xml$ sitemap.php [L]
+
+  # ---------- Clean, search-friendly addresses ----------
+  # Old addresses move permanently (301) so Google keeps one URL per page:
+  #   /index.php → /      /about.php → /about      /contact.php?sent=1 → /contact?sent=1
+  # (Only links typed or followed by visitors — form posts and admin pages are left alone.)
+  RewriteCond %{ENV:REDIRECT_STATUS} ^$
+  RewriteCond %{REQUEST_METHOD} !=POST
+  RewriteCond %{THE_REQUEST} ^[A-Z]+\s/+index(\.php)?[\s?] [NC]
+  RewriteRule ^index(\.php)?$ / [R=301,L,NC]
+
+  RewriteCond %{ENV:REDIRECT_STATUS} ^$
+  RewriteCond %{REQUEST_METHOD} !=POST
+  RewriteCond %{THE_REQUEST} ^[A-Z]+\s/+([a-z0-9-]+)\.php[\s?] [NC]
+  RewriteCond %1 !^sitemap$ [NC]
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^([a-z0-9-]+)\.php$ /%1 [R=301,L,NC]
+
+  # "/about/" → "/about"
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{DOCUMENT_ROOT}/$1.php -f
+  RewriteRule ^([a-z0-9-]+)/$ /$1 [R=301,L,NC]
+
+  # Serve "/about" from about.php (the address bar keeps showing "/about")
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME}.php -f
+  RewriteRule ^([a-z0-9-]+)$ $1.php [L,NC]
 
   # Hidden folders and files (.git, .env …) — but keep .well-known for SSL certificates
   RewriteRule (^|/)\.(?!well-known/) - [F,L]
