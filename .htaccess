@@ -41,6 +41,9 @@ ErrorDocument 404 /404.php
   RewriteCond %{DOCUMENT_ROOT}/$1.php -f
   RewriteRule ^([a-z0-9-]+)/$ /$1 [R=301,L,NC]
 
+  # Local SEO pages: /sri-lankan-restaurant/glen-waverley and /dishes/chicken-kottu-roti
+  RewriteRule ^(sri-lankan-restaurant|dishes)/([a-z0-9-]+)/?$ $1.php?item=$2 [L,QSA,NC]
+
   # Serve "/about" from about.php (the address bar keeps showing "/about")
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME} !-f

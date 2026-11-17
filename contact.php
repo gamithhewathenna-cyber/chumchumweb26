@@ -150,5 +150,24 @@ require __DIR__ . '/includes/partials/header.php';
     </div>
   </section>
 
+  <?php if (local_enabled($s)): ?>
+  <!-- ============ AREAS WE SERVE + DISHES (local SEO links) ============ -->
+  <section class="local-areas local-areas--contact" aria-labelledby="areas-title">
+    <h2 class="local-h2" id="areas-title" data-reveal>Sri Lankan food near you</h2>
+    <p class="local-areas__lead" data-reveal style="--d:1">We're in Clayton and welcome diners from all over Melbourne's south-east. Find directions and drive times from your suburb:</p>
+    <ul class="local-chips" data-reveal style="--d:2">
+      <?php foreach (local_area_list($s) as $a): ?>
+        <li><a href="<?= e(area_url($a['slug'])) ?>"><?= e($a['name']) ?> <span><?= e((string) $a['km']) ?> km</span></a></li>
+      <?php endforeach; ?>
+    </ul>
+    <?php if ($localDishes = local_dishes($s)): ?>
+      <h3 class="local-areas__ring" data-reveal>Our Sri Lankan dishes</h3>
+      <ul class="local-chips" data-reveal>
+        <?php foreach ($localDishes as $d): ?><li><a href="<?= e(dish_url($d['slug'])) ?>"><?= e($d['name']) ?></a></li><?php endforeach; ?>
+      </ul>
+    <?php endif; ?>
+  </section>
+  <?php endif; ?>
+
 </main>
 <?php require __DIR__ . '/includes/partials/footer.php'; ?>

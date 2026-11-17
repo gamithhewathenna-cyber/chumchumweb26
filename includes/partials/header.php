@@ -35,10 +35,22 @@ $schema = [
                         'addressLocality' => 'Clayton', 'addressRegion' => 'VIC', 'addressCountry' => 'AU'],
     'hasMenu'       => $absolute(base_url('menu.php')),
 ];
+$schema = ['@id' => $absolute(base_url('')) . '#restaurant'] + $schema;
+if (preg_match('~\b(3\d{3})\b~', $s['address_line1'] . ' ' . $s['address_line2'], $pc)) {
+    $schema['address']['postalCode'] = $pc[1];
+}
+if (is_numeric($s['seo_lat'] ?? '') && is_numeric($s['seo_lng'] ?? '') && (float) $s['seo_lat'] && (float) $s['seo_lng']) {
+    $schema['geo'] = ['@type' => 'GeoCoordinates', 'latitude' => (float) $s['seo_lat'], 'longitude' => (float) $s['seo_lng']];
+}
 $sameAs = array_values(array_filter([$s['facebook_url'] ?? '', $s['instagram_url'] ?? ''], 'has_link'));
 if ($sameAs) {
     $schema['sameAs'] = $sameAs;
 }
+// Pages can add to the restaurant details ($schemaAdd, e.g. areaServed) and add more blocks ($extraSchema)
+if (!empty($schemaAdd) && is_array($schemaAdd)) {
+    $schema = array_merge($schema, $schemaAdd);
+}
+$extraSchema = isset($extraSchema) && is_array($extraSchema) ? $extraSchema : [];
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,6 +76,9 @@ if ($sameAs) {
 <link rel="icon" type="image/png" href="<?= e(asset('img/logo.png')) ?>">
 <link rel="apple-touch-icon" href="<?= e(asset('img/logo.png')) ?>">
 <script type="application/ld+json"><?= json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?></script>
+<?php foreach ($extraSchema as $block): ?>
+<script type="application/ld+json"><?= json_encode($block, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?></script>
+<?php endforeach; ?>
 <link rel="preload" href="<?= e(asset('fonts/dm-sans-latin-opsz-normal.woff2')) ?>" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="<?= e(img_url($heroPreload ?? $s['hero_image'])) ?>" as="image">
 <link rel="stylesheet" href="<?= e(asset('css/style.css')) ?>">

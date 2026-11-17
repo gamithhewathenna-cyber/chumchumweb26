@@ -45,6 +45,7 @@ $contactCards = [
 $cards = [
     ['settings.php', 'Site Settings',   'Phone, email, address, links, footer, SEO and maintenance mode.', null],
     ['email-settings.php', 'Email (SMTP)', 'Where contact-form emails are sent, the mail server settings, and a test email.', (get_settings()['smtp_enabled'] ?? '0') === '1' ? 'SMTP on' : 'Not set up'],
+    ['local-seo.php', 'Local SEO pages', 'Suburb pages ("Sri Lankan restaurant near Glen Waverley") and dish pages — add your own text and photos.', local_enabled(get_settings()) ? count(local_areas()) . ' suburbs + ' . count(local_dishes(get_settings())) . ' dishes' : 'Off'],
     ['account.php',  'Account & Users', 'Change your password and manage admin users.', null],
 ];
 

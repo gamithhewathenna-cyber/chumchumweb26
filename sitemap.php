@@ -51,6 +51,20 @@ $pages = [
     ['contact.php', ['contact_', 'phone', 'email', 'address_'],                                'monthly', '0.8'],
 ];
 
+// Local SEO pages: areas we serve + dishes (Admin → Local SEO)
+$s = get_settings();
+if (local_enabled($s)) {
+    // '@' + full URL, and the PHP file that builds the page (for <lastmod>)
+    $pages[] = ['@' . area_url(), ['local_', 'area_'], 'monthly', '0.8', 'sri-lankan-restaurant.php'];
+    foreach (local_area_list($s) as $a) {
+        $pages[] = ['@' . area_url($a['slug']), ['local_', 'area_text_' . $a['slug'], 'area_image_' . $a['slug']], 'monthly', $a['km'] < 8 ? '0.8' : '0.7', 'sri-lankan-restaurant.php'];
+    }
+    $pages[] = ['@' . dish_url(), ['dishes_', 'menu_', 'dish_'], 'monthly', '0.7', 'dishes.php'];
+    foreach (local_dishes($s) as $d) {
+        $pages[] = ['@' . dish_url($d['slug']), ['dish_text_' . $d['slug'], 'dish_image_' . $d['slug'], 'menu_'], 'monthly', '0.7', 'dishes.php'];
+    }
+}
+
 $gallery = get_gallery_images();
 
 header('Content-Type: application/xml; charset=utf-8');
@@ -58,11 +72,13 @@ header('X-Robots-Tag: noindex'); // the sitemap itself shouldn't appear in searc
 
 echo '<?xml version="1.0" encoding="UTF-8"?>', "\n";
 echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">', "\n";
-foreach ($pages as [$path, $prefixes, $freq, $priority]) {
-    $file    = __DIR__ . '/' . ($path === '' ? 'index.php' : $path);
+foreach ($pages as $entry) {
+    [$path, $prefixes, $freq, $priority] = $entry;
+    $isUrl   = strpos($path, '@') === 0;
+    $file    = __DIR__ . '/' . ($isUrl ? $entry[4] : ($path === '' ? 'index.php' : $path));
     $lastmod = max(settings_updated($prefixes), is_file($file) ? (int) filemtime($file) : 0);
     echo "  <url>\n";
-    echo '    <loc>', htmlspecialchars(absolute_url($path), ENT_XML1), "</loc>\n";
+    echo '    <loc>', htmlspecialchars($isUrl ? make_absolute(substr($path, 1)) : absolute_url($path), ENT_XML1), "</loc>\n";
     if ($lastmod) {
         echo '    <lastmod>', gmdate('Y-m-d', $lastmod), "</lastmod>\n";
     }
