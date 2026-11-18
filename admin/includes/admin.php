@@ -486,6 +486,7 @@ function admin_nav(): array
         'home'     => ['Home Page',       'M4 5h16v14H4zM4 9h16M8 13h8M8 16h5'],
         'about-page' => ['About Page',    'M12 8h.01M11 12h1v5h1M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z'],
         'menu-page' => ['Menu Page',      'M7 3v8m-2-8v4a2 2 0 0 0 4 0V3M7 11v10M16 3c-2 1-3 4-3 7h3v11'],
+        'performance-page' => ['Performance Meals', 'M6 13h12M7 13a5 5 0 0 0 10 0M12 4v3M8.5 5.5l1 2M15.5 5.5l-1 2M4 20h16'],
         'gallery-page' => ['Gallery Page', 'M4 5h16v14H4zM4 15l4-4 4 4 3-3 5 5M15 9h.01'],
         'messages' => ['Contact Page',    'M4 6h16v12H4zM4 7l8 6 8-6'],
         'popups'   => ['Popup Offers',    'M20 12v9H4v-9M2 7h20v5H2zM12 21V7M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z'],

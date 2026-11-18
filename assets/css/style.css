@@ -1283,3 +1283,121 @@ a.promo__media:hover img { transform: scale(1.02); }
 .promo__preview { margin-top: 10px; color: var(--gold); font-size: 13px; text-align: center; }
 html.promo-lock, html.promo-lock body { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .promo__dialog { transform: none; } }
+
+/* ==========================================================================
+   Performance Meals page (reuses the About page intro / story / card styles)
+   ========================================================================== */
+.pm-hero__title { font-size: clamp(44px, 11vw, 88px); line-height: 1.02; }
+.pm-hero__tagline { color: var(--gold) !important; font-size: 15px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; line-height: 1.6; }
+.pm-h2 { font-size: 30px; font-weight: 400; line-height: 1.15; letter-spacing: -.005em; }
+.pm-lead, .pm-text { margin-top: 14px; color: var(--text-soft); font-size: 16px; font-weight: 300; line-height: 1.6; }
+.pm-text { display: grid; gap: 14px; }
+.pm-head { display: grid; justify-items: center; text-align: center; max-width: 720px; margin: 0 auto; }
+.pm-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.pm-actions--center { justify-content: center; }
+.pm-intro .ap-intro__text p:last-child { color: var(--white); font-weight: 600; }
+.pm-life .ap-story__text p:last-child { color: var(--gold); font-weight: 600; }
+
+/* Meal cards */
+.pm-meals { padding: 72px 20px 24px; scroll-margin-top: 90px; }
+.pm-meals__grid { display: grid; gap: 18px; margin-top: 40px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); list-style: none; }
+.pm-meal {
+  display: grid; grid-template-rows: auto 1fr; overflow: hidden;
+  background: var(--card); border: 1px solid #262626; border-radius: 26px;
+  transition: border-color .3s ease, translate .4s ease, box-shadow .4s ease;
+}
+.pm-meal:hover { border-color: rgba(231, 175, 39, .7); translate: 0 -6px; box-shadow: 0 22px 44px -22px rgba(231, 175, 39, .55); }
+.pm-meal__media { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #111; }
+.pm-meal__media img { width: 100%; height: 100%; object-fit: cover; transition: scale 1s ease; }
+.pm-meal:hover .pm-meal__media img { scale: 1.05; }
+.pm-meal__num {
+  position: absolute; left: 14px; top: 14px; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%;
+  background: var(--gold); color: var(--black); font-size: 15px; font-weight: 700; letter-spacing: .02em;
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, .7);
+}
+.pm-meal__body { display: grid; align-content: start; gap: 8px; padding: 20px 22px 26px; }
+.pm-meal__body h3 { font-size: 21px; font-weight: 500; line-height: 1.2; }
+.pm-meal:hover h3 { color: var(--gold); }
+.pm-meal__sides { color: var(--gold); font-size: 13.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.pm-meal__text { color: var(--text-soft); font-size: 14.5px; font-weight: 300; line-height: 1.55; }
+
+/* Why choose: tick icons */
+.pm-check { display: grid; place-items: center; justify-self: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(231, 175, 39, .14); color: var(--gold); }
+.pm-check svg { width: 22px; height: 22px; }
+.pm-why__cards { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+/* Made for everyone */
+.pm-everyone { display: grid; gap: 36px; align-items: center; padding: 72px 20px 24px; }
+.pm-everyone__media { border-radius: 28px; overflow: hidden; background: #111; }
+.pm-everyone__media img { width: 100%; height: 100%; aspect-ratio: 5 / 4; object-fit: cover; }
+.pm-everyone__content .tag { margin-bottom: 20px; }
+.pm-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.pm-tags li { padding: 8px 16px; border: 1px solid rgba(231, 175, 39, .5); border-radius: 999px; color: var(--text-soft); font-size: 14px; }
+
+/* How it works */
+.pm-how { padding: 72px 20px 24px; text-align: center; }
+.pm-steps { display: grid; gap: 18px; margin-top: 40px; list-style: none; }
+.pm-step { position: relative; display: grid; justify-items: center; gap: 10px; padding: 34px 24px 30px; border-radius: 26px; background: #0f0f0f; border: 1px solid #262626; }
+.pm-step__num {
+  display: grid; place-items: center; width: 58px; height: 58px; border-radius: 50%; margin-bottom: 8px;
+  border: 1px solid var(--gold); color: var(--gold); font-size: 22px; font-weight: 600;
+}
+.pm-step h3 { font-size: 20px; font-weight: 500; }
+.pm-step p { max-width: 300px; color: var(--text-soft); font-size: 14.5px; font-weight: 300; line-height: 1.55; }
+
+/* Call to action */
+.pm-cta {
+  position: relative; margin: 72px 20px 56px; padding: 56px 24px; border-radius: 32px; text-align: center; overflow: hidden;
+  background: radial-gradient(120% 140% at 50% 0%, rgba(231, 175, 39, .22), rgba(231, 175, 39, 0) 60%), #0f0f0f;
+  border: 1px solid rgba(231, 175, 39, .35);
+}
+.pm-cta__title { font-size: clamp(32px, 7vw, 56px); font-weight: 400; line-height: 1.08; }
+.pm-cta__text { display: grid; gap: 10px; max-width: 620px; margin: 18px auto 0; color: var(--text-soft); font-size: 16px; font-weight: 300; line-height: 1.6; }
+.pm-cta__tagline { margin-top: 20px; color: var(--gold); font-size: 15px; letter-spacing: .14em; text-transform: uppercase; }
+.pm-btn {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 200px; height: 50px; padding: 0 30px;
+  border-radius: 999px; border: 1px solid rgba(255, 255, 255, .4); color: var(--white); font-size: 16px; font-weight: 500;
+  transition: background-color .25s ease, border-color .25s ease, color .25s ease, translate .25s ease;
+}
+.pm-btn:hover { border-color: var(--gold); color: var(--gold); translate: 0 -2px; }
+.pm-btn--gold { background: var(--gold); border-color: var(--gold); color: var(--black); }
+.pm-btn--gold:hover { background: #f0bb35; color: var(--black); }
+
+@media (min-width: 768px) {
+  .pm-meals, .pm-everyone, .pm-how { padding: 110px 40px 32px; }
+  .pm-h2 { font-size: 38px; }
+  .pm-everyone { grid-template-columns: 1fr 1fr; gap: 56px; }
+  .pm-steps { grid-template-columns: repeat(3, 1fr); }
+  .pm-cta { margin: 110px 40px 80px; padding: 80px 40px; }
+}
+@media (min-width: 1000px) {
+  .pm-meals__grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1200px) {
+  .pm-hero__title { font-size: calc(104 * var(--u)); }
+  .pm-hero__tagline { font-size: calc(17 * var(--u)); }
+  /* The About intro/story use fixed-height artboards; these sections hold more text, so let them flow */
+  .pm-intro { display: grid; grid-template-columns: 1fr calc(430 * var(--u)); gap: calc(90 * var(--u)); align-items: center; height: auto;
+              padding: calc(130 * var(--u)) calc(194 * var(--u)) calc(40 * var(--u)); }
+  .pm-intro .ap-intro__content, .pm-intro .ap-intro__media { position: static; width: auto; height: auto; }
+  .pm-intro .ap-intro__media img { height: calc(640 * var(--u)); }
+  .pm-intro .ap-intro__title { font-size: calc(34 * var(--u)); line-height: 1.25; }
+  .pm-intro .ap-intro__text { font-size: calc(15 * var(--u)); line-height: 1.6; }
+  .pm-life { display: grid; grid-template-columns: calc(470 * var(--u)) 1fr; gap: calc(70 * var(--u)); height: auto;
+             padding: calc(130 * var(--u)) calc(181 * var(--u)); }
+  .pm-life .ap-story__title, .pm-life .ap-story__text { position: static; width: auto; }
+  .pm-life .ap-story__title { font-size: calc(64 * var(--u)); line-height: 1.05; }
+  .pm-life .ap-story__text { font-size: calc(16 * var(--u)); line-height: 1.65; gap: calc(16 * var(--u)); }
+  .pm-meals, .pm-everyone, .pm-how { padding: calc(130 * var(--u)) calc(106 * var(--u)) calc(30 * var(--u)); }
+  .pm-h2 { font-size: calc(44 * var(--u)); }
+  .pm-lead, .pm-text { font-size: calc(17 * var(--u)); }
+  .pm-meals__grid { gap: calc(26 * var(--u)); margin-top: calc(56 * var(--u)); }
+  .pm-why .ap-why__title { font-size: calc(40 * var(--u)); }
+  .pm-why__cards { grid-template-columns: repeat(3, 1fr); gap: calc(20 * var(--u)); }
+  .pm-why .ap-card { padding: calc(30 * var(--u)) calc(26 * var(--u)); gap: calc(12 * var(--u)); }
+  .pm-why .ap-card h3 { font-size: calc(17 * var(--u)); }
+  .pm-why .ap-card p { font-size: calc(14.5 * var(--u)); line-height: 1.55; }
+  .pm-everyone { gap: calc(90 * var(--u)); }
+  .pm-cta { margin: calc(130 * var(--u)) calc(106 * var(--u)) calc(110 * var(--u)); padding: calc(100 * var(--u)) calc(60 * var(--u)); }
+  .pm-cta__title { font-size: calc(64 * var(--u)); }
+}

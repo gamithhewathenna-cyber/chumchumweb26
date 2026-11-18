@@ -121,6 +121,21 @@ admin_page_start('Dashboard', 'index');
     <?php endforeach; ?>
   </div>
 
+  <h2 class="section-title">Performance Meals Page</h2>
+  <div class="cards">
+    <?php foreach ([
+        ['performance-page.php?section=header', 'Title & Banner', 'Page title, tagline and banner photo.', null],
+        ['performance-page.php?section=meals',  'Meals',          'The numbered meal cards — names, sides, descriptions and photos.', null],
+        ['performance-page.php?section=why',    'Why Choose',     'The cards with the gold ticks.', null],
+        ['performance-page.php?section=cta',    'Call to Action', 'The box and buttons at the bottom.', null],
+    ] as [$href, $title, $text, $meta]): ?>
+      <a class="card card--link" href="<?= e($href) ?>">
+        <h2><?= e($title) ?></h2>
+        <p><?= e($text) ?></p>
+      </a>
+    <?php endforeach; ?>
+  </div>
+
   <h2 class="section-title">Gallery Page</h2>
   <div class="cards">
     <?php foreach ($galleryCards as [$href, $title, $text, $meta]): ?>

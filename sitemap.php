@@ -47,7 +47,8 @@ $pages = [
     ['',            ['hero_', 'about_', 'hours_', 'reservation_', 'site_name', 'meta_'],      'weekly',  '1.0'],
     ['menu.php',    ['menu_'],                                                                 'weekly',  '0.9'],
     ['about.php',   ['aboutpage_'],                                                            'monthly', '0.8'],
-    ['gallery.php', ['gallery_'],                                                              'weekly',  '0.7'],
+    ['performance-meals.php', ['pm_'],                                                       'monthly', '0.8'],
+    ['gallery.php', ['gallery_'],                                                             'weekly',  '0.7'],
     ['contact.php', ['contact_', 'phone', 'email', 'address_'],                                'monthly', '0.8'],
 ];
 
